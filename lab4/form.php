@@ -233,7 +233,7 @@ function getErrorMessage($fieldName, $fieldErrors) {
 <body>
     <div class="container">
         <div class="form-box">
-            <h1>Анкета разработчика</h1>
+            <h1>Анкета</h1>
 
             <?php if (isset($_GET['success'])): ?>
                 <div class="success-message">
@@ -333,9 +333,11 @@ function getErrorMessage($fieldName, $fieldErrors) {
                     <input type="date"
                            name="birth_date"
                            class="<?= hasError('birth_date', $fieldErrors) ?>"
-                           value="<?= htmlspecialchars($formData['birth_date'] ?? '') ?>">
+                           value="<?= htmlspecialchars($formData['birth_date'] ?? '') ?>"
+                           max="<?= date('Y-m-d') ?>">
                     <div class="hint">
-                        <strong>Формат:</strong> ГГГГ-ММ-ДД
+                        <strong>Формат:</strong> ГГГГ-ММ-ДД (например, 1990-05-15)<br>
+                        <strong>Важно:</strong> дата не может быть в будущем
                     </div>
                     <?php if ($msg = getErrorMessage('birth_date', $fieldErrors)): ?>
                         <div class="field-error-message"><?= htmlspecialchars($msg) ?></div>
