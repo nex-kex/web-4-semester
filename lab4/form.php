@@ -49,38 +49,34 @@ function getErrorMessage($fieldName, $fieldErrors) {
     <title>Анкета</title>
     <style>
         body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: Arial, sans-serif;
+            background: #f0f2f5;
             margin: 0;
             padding: 20px;
-            min-height: 100vh;
         }
         .container {
-            max-width: 700px;
+            max-width: 600px;
             margin: 0 auto;
         }
         .form-box {
             background: white;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         h1 {
             text-align: center;
             color: #333;
             margin-top: 0;
-            margin-bottom: 30px;
-            font-size: 2em;
         }
         .form-group {
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
         label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 5px;
             color: #555;
-            font-weight: 600;
-            font-size: 0.95em;
+            font-weight: bold;
         }
         input[type="text"],
         input[type="tel"],
@@ -89,11 +85,10 @@ function getErrorMessage($fieldName, $fieldErrors) {
         select,
         textarea {
             width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e1e1e1;
-            border-radius: 8px;
-            font-size: 15px;
-            transition: all 0.3s ease;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
             box-sizing: border-box;
         }
         input:focus,
