@@ -3,59 +3,169 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Задание 1</title>
+    <title>Задание 1 - HTTP запросы</title>
     <style>
-        img {
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-            width: 60%;
-            height: auto;
-            margin-bottom: 20px;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        h2 {
-            text-align: center;
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f0f2f5;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            margin-bottom: 30px;
+            overflow: hidden;
+            border: 1px solid #d0d7de;
+        }
+
+        .card-header {
+            background: #e9edf2;
+            padding: 18px 25px;
+            border-bottom: 2px solid #bdc3cf;
+        }
+
+        .card-header h2 {
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: #0a1e2f;
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        .card-image {
+            padding: 25px;
+            background: #fafbfc;
+            display: flex;
+            justify-content: center;
+        }
+
+        .card-image img {
+            display: block;
             width: 80%;
-            margin-left: auto;
-            margin-right: auto;
-            margin-bottom: 10px;
-            margin-top: 30px;
+            max-width: 1000px;
+            height: auto;
+            border: 2px solid #cbd5e1;
+            border-radius: 12px;
+            background: white;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
         }
 
         @media (max-width: 768px) {
-            img {
-                width: 100%;
-                margin-bottom: 15px;
+            body {
+                padding: 20px 12px;
             }
-            h2 {
-                width: 90%;
-                margin-top: 25px;
-                margin-bottom: 8px;
+
+            .card-header {
+                padding: 15px 18px;
+            }
+
+            .card-header h2 {
+                font-size: 1.3rem;
+            }
+
+            .card-image {
+                padding: 18px;
+            }
+
+            .card-image img {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .card-header h2 {
+                font-size: 1.1rem;
             }
         }
     </style>
 </head>
 <body>
-    <h2>Получить главную страницу методом GET в протоколе HTTP 1.0</h2>
-    <img src="screenshots/HTTP10.png" alt="">
+    <div class="container">
+        <!-- 1 -->
+        <div class="card">
+            <div class="card-header">
+                <h2>1. Получить главную страницу методом GET в протоколе HTTP 1.0</h2>
+            </div>
+            <div class="card-image">
+                <img src="screenshots/HTTP10.png" alt="HTTP 1.0 главная страница">
+            </div>
+        </div>
 
-    <h2>Получить внутреннюю страницу методом GET в протоколе HTTP 1.1</h2>
-    <img src="screenshots/HTTP11.png" alt="">
+        <!-- 2 -->
+        <div class="card">
+            <div class="card-header">
+                <h2>2. Получить внутреннюю страницу методом GET в протоколе HTTP 1.1</h2>
+            </div>
+            <div class="card-image">
+                <img src="screenshots/HTTP11.png" alt="HTTP 1.1 внутренняя страница">
+            </div>
+        </div>
 
-    <h2>Определить размер файла file.tar.gz, не скачивая его</h2>
-    <img src="screenshots/size.png" alt="">
+        <!-- 3 -->
+        <div class="card">
+            <div class="card-header">
+                <h2>3. Определить размер файла file.tar.gz, не скачивая его</h2>
+            </div>
+            <div class="card-image">
+                <img src="screenshots/size.png" alt="Определение размера файла">
+            </div>
+        </div>
 
-    <h2>Определить медиатип ресурса /image.png</h2>
-    <img src="screenshots/type.png" alt="">
+        <!-- 4 -->
+        <div class="card">
+            <div class="card-header">
+                <h2>4. Определить медиатип ресурса /image.png</h2>
+            </div>
+            <div class="card-image">
+                <img src="screenshots/type.png" alt="Медиатип image.png">
+            </div>
+        </div>
 
-    <h2>Отправить комментарий на сервер по адресу /index.php</h2>
-    <img src="screenshots/post.png" alt="">
+        <!-- 5 -->
+        <div class="card">
+            <div class="card-header">
+                <h2>5. Отправить комментарий на сервер по адресу /index.php</h2>
+            </div>
+            <div class="card-image">
+                <img src="screenshots/post.png" alt="POST запрос">
+            </div>
+        </div>
 
-    <h2>Получить первые 100 байт файла /file.tar.gz</h2>
-    <img src="screenshots/100bytes.png" alt="">
+        <!-- 6 -->
+        <div class="card">
+            <div class="card-header">
+                <h2>6. Получить первые 100 байт файла /file.tar.gz</h2>
+            </div>
+            <div class="card-image">
+                <img src="screenshots/100bytes.png" alt="Первые 100 байт файла">
+            </div>
+        </div>
 
-    <h2>Определить кодировку ресурса /index.php</h2>
-    <img src="screenshots/type2.png" alt="">
+        <!-- 7 -->
+        <div class="card">
+            <div class="card-header">
+                <h2>7. Определить кодировку ресурса /index.php</h2>
+            </div>
+            <div class="card-image">
+                <img src="screenshots/type2.png" alt="Кодировка index.php">
+            </div>
+        </div>
+    </div>
 </body>
 </html>
