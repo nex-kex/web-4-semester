@@ -17,13 +17,25 @@ function generateLogin($full_name) {
         'ж'=>'zh', 'з'=>'z', 'и'=>'i', 'й'=>'y', 'к'=>'k', 'л'=>'l', 'м'=>'m',
         'н'=>'n', 'о'=>'o', 'п'=>'p', 'р'=>'r', 'с'=>'s', 'т'=>'t', 'у'=>'u',
         'ф'=>'f', 'х'=>'h', 'ц'=>'ts', 'ч'=>'ch', 'ш'=>'sh', 'щ'=>'sch', 'ъ'=>'',
-        'ы'=>'y', 'ь'=>'', 'э'=>'e', 'ю'=>'yu', 'я'=>'ya'
+        'ы'=>'y', 'ь'=>'', 'э'=>'e', 'ю'=>'yu', 'я'=>'ya',
+        'А'=>'A', 'Б'=>'B', 'В'=>'V', 'Г'=>'G', 'Д'=>'D', 'Е'=>'E', 'Ё'=>'E',
+        'Ж'=>'Zh', 'З'=>'Z', 'И'=>'I', 'Й'=>'Y', 'К'=>'K', 'Л'=>'L', 'М'=>'M',
+        'Н'=>'N', 'О'=>'O', 'П'=>'P', 'Р'=>'R', 'С'=>'S', 'Т'=>'T', 'У'=>'U',
+        'Ф'=>'F', 'Х'=>'H', 'Ц'=>'Ts', 'Ч'=>'Ch', 'Ш'=>'Sh', 'Щ'=>'Sch', 'Ъ'=>'',
+        'Ы'=>'Y', 'Ь'=>'', 'Э'=>'E', 'Ю'=>'Yu', 'Я'=>'Ya'
     ];
 
-    $lastNameTrans = strtr(mb_strtolower($lastName), $translit);
-    $firstInitial = mb_substr($firstName, 0, 1);
+    // Транслитерация фамилии
+    $lastNameTrans = strtr($lastName, $translit);
 
-    $baseLogin = $lastNameTrans . $firstInitial;
+    // Берем первую букву имени (просто первый символ)
+    $firstInitial = mb_substr ? mb_substr($firstName, 0, 1) : substr($firstName, 0, 1);
+
+    if (!$firstInitial && strlen($firstName) > 0) {
+        $firstInitial = $firstName[0];
+    }
+
+    $baseLogin = strtolower($lastNameTrans . $firstInitial);
     $baseLogin = preg_replace('/[^a-z0-9]/', '', $baseLogin);
 
     // Добавляем случайное число для уникальности

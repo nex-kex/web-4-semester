@@ -1,15 +1,19 @@
 <?php
+// Загрузка сохраненных данных из cookies (на год)
 $savedData = [];
 if (isset($_COOKIE['form_data'])) {
     $savedData = json_decode($_COOKIE['form_data'], true) ?: [];
 }
 
+// Загрузка ошибок из cookies (на сессию)
 $fieldErrors = [];
 if (isset($_COOKIE['form_errors'])) {
     $fieldErrors = json_decode($_COOKIE['form_errors'], true) ?: [];
+    // Удаляем cookies после использования
     setcookie('form_errors', '', time() - 3600, '/');
 }
 
+// Получаем данные для заполнения формы (приоритет: POST > cookies > пусто)
 $formData = $_POST ?: $savedData;
 
 try {
@@ -34,10 +38,12 @@ try {
     ];
 }
 
+// Функция для проверки поля с ошибкой
 function hasError($fieldName, $fieldErrors) {
     return isset($fieldErrors[$fieldName]) ? 'error-field' : '';
 }
 
+// Функция для получения сообщения об ошибке поля
 function getErrorMessage($fieldName, $fieldErrors) {
     return $fieldErrors[$fieldName] ?? '';
 }
@@ -46,37 +52,41 @@ function getErrorMessage($fieldName, $fieldErrors) {
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Анкета</title>
+    <title>Анкета разработчика</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background: #f0f2f5;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             margin: 0;
             padding: 20px;
+            min-height: 100vh;
         }
         .container {
-            max-width: 600px;
+            max-width: 700px;
             margin: 0 auto;
         }
         .form-box {
             background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
         h1 {
             text-align: center;
             color: #333;
             margin-top: 0;
+            margin-bottom: 30px;
+            font-size: 2em;
         }
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
         label {
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
             color: #555;
-            font-weight: bold;
+            font-weight: 600;
+            font-size: 0.95em;
         }
         input[type="text"],
         input[type="tel"],
@@ -85,10 +95,11 @@ function getErrorMessage($fieldName, $fieldErrors) {
         select,
         textarea {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 14px;
+            padding: 12px 15px;
+            border: 2px solid #e1e1e1;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.3s ease;
             box-sizing: border-box;
         }
         input:focus,
@@ -99,6 +110,7 @@ function getErrorMessage($fieldName, $fieldErrors) {
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
+        /* Стили для полей с ошибками */
         .error-field {
             border-color: #dc3545 !important;
             background-color: #fff8f8;
@@ -179,6 +191,7 @@ function getErrorMessage($fieldName, $fieldErrors) {
             background: #5a67d8;
         }
 
+        /* Сообщения */
         .error-summary {
             background: #fee;
             color: #c33;
@@ -228,7 +241,7 @@ function getErrorMessage($fieldName, $fieldErrors) {
 <body>
     <div class="container">
         <div class="form-box">
-            <h1>Анкета</h1>
+            <h1>Анкета разработчика</h1>
 
             <?php if (isset($_GET['success'])): ?>
                 <div class="success-message">
@@ -268,7 +281,7 @@ function getErrorMessage($fieldName, $fieldErrors) {
                            value="<?= htmlspecialchars($formData['full_name'] ?? '') ?>"
                            placeholder="Иванов Иван Иванович">
                     <div class="hint">
-                        <strong>Допустимо:</strong> только буквы (русские/английские), пробелы и дефис
+                        <strong>Допустимо:</strong> только буквы (русские/английские), пробелы и дефис, не более 150 символов
                     </div>
                     <?php if ($msg = getErrorMessage('full_name', $fieldErrors)): ?>
                         <div class="field-error-message"><?= htmlspecialchars($msg) ?></div>
@@ -289,7 +302,7 @@ function getErrorMessage($fieldName, $fieldErrors) {
                            value="<?= htmlspecialchars($formData['phone'] ?? '') ?>"
                            placeholder="+7 (999) 123-45-67">
                     <div class="hint">
-                        <strong>Допустимо:</strong> цифры, пробелы, дефисы, скобки, знак +
+                        <strong>Допустимо:</strong> цифры, пробелы, дефисы, скобки, знак + (например: +7 (999) 123-45-67)
                     </div>
                     <?php if ($msg = getErrorMessage('phone', $fieldErrors)): ?>
                         <div class="field-error-message"><?= htmlspecialchars($msg) ?></div>
@@ -310,7 +323,7 @@ function getErrorMessage($fieldName, $fieldErrors) {
                            value="<?= htmlspecialchars($formData['email'] ?? '') ?>"
                            placeholder="ivan@example.com">
                     <div class="hint">
-                        <strong>Допустимо:</strong> стандартный формат email (name@domain.com)
+                        <strong>Допустимо:</strong> стандартный формат email (например: name@domain.com)
                     </div>
                     <?php if ($msg = getErrorMessage('email', $fieldErrors)): ?>
                         <div class="field-error-message"><?= htmlspecialchars($msg) ?></div>
@@ -328,11 +341,9 @@ function getErrorMessage($fieldName, $fieldErrors) {
                     <input type="date"
                            name="birth_date"
                            class="<?= hasError('birth_date', $fieldErrors) ?>"
-                           value="<?= htmlspecialchars($formData['birth_date'] ?? '') ?>"
-                           max="<?= date('Y-m-d') ?>">
+                           value="<?= htmlspecialchars($formData['birth_date'] ?? '') ?>">
                     <div class="hint">
-                        <strong>Формат:</strong> ГГГГ-ММ-ДД (например, 1990-05-15)<br>
-                        <strong>Важно:</strong> дата не может быть в будущем
+                        <strong>Допустимо:</strong> дата в формате ГГГГ-ММ-ДД (например: 1990-05-15), не может быть в будущем
                     </div>
                     <?php if ($msg = getErrorMessage('birth_date', $fieldErrors)): ?>
                         <div class="field-error-message"><?= htmlspecialchars($msg) ?></div>
@@ -391,8 +402,7 @@ function getErrorMessage($fieldName, $fieldErrors) {
                         <?php endforeach; ?>
                     </select>
                     <div class="hint">
-                        <strong>Доступные языки:</strong> Pascal, C, C++, JavaScript, PHP, Python, Java, Haskell, Clojure, Prolog, Scala, Go<br>
-                        Для выбора нескольких используйте Ctrl+клик (Cmd+клик на Mac)
+                        <strong>Допустимо:</strong> Pascal, C, C++, JavaScript, PHP, Python, Java, Haskell, Clojure, Prolog, Scala, Go (можно выбрать несколько)
                     </div>
                     <?php if ($msg = getErrorMessage('languages', $fieldErrors)): ?>
                         <div class="field-error-message"><?= htmlspecialchars($msg) ?></div>
@@ -436,12 +446,14 @@ function getErrorMessage($fieldName, $fieldErrors) {
             <div style="text-align: center; margin-top: 20px; color: #888; font-size: 12px;">
                 * Обязательные поля
             </div>
+
+            <!-- Ссылка на вход для авторизованных пользователей -->
+            <div style="text-align: center; margin-top: 20px;">
+                <a href="login.php" style="color: #667eea; text-decoration: none; font-size: 14px;">
+                    🔑 Уже есть аккаунт? Войти для редактирования
+                </a>
+            </div>
         </div>
     </div>
-<div style="text-align: center; margin-top: 20px;">
-    <a href="login.php" style="color: #667eea; text-decoration: none; font-size: 14px;">
-        🔑 Уже есть аккаунт? Войти для редактирования
-    </a>
-</div>
 </body>
 </html>
