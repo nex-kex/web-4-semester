@@ -1,11 +1,11 @@
 <?php
-// session_start();
-//
-// // Проверка авторизации
-// if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
-//     header('Location: login.php');
-//     exit;
-// }
+session_start();
+
+// Проверка авторизации
+if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
+    header('Location: login.php');
+    exit;
+}
 
 require_once __DIR__ . '/../includes/functions.php';
 
@@ -204,11 +204,31 @@ $error = $_GET['error'] ?? '';
         }
 
         .gender-badge {
-            background: #e9ecef;
-            color: #495057;
-            padding: 3px 8px;
-            border-radius: 12px;
-            font-size: 12px;
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            text-align: center;
+            min-width: 80px;
+        }
+
+        .gender-badge.male {
+            background: #e3f2fd;
+            color: #1976d2;
+            border: 1px solid #bbdefb;
+        }
+
+        .gender-badge.female {
+            background: #fce4ec;
+            color: #c2185b;
+            border: 1px solid #f8bbd0;
+        }
+
+        /* Убираем лишнюю ширину */
+        td .gender-badge {
+            width: auto;
+            display: inline-block;
         }
 
         @media (max-width: 768px) {
@@ -281,8 +301,8 @@ $error = $_GET['error'] ?? '';
                             <td><?= htmlspecialchars($user['phone']) ?></td>
                             <td><?= date('d.m.Y', strtotime($user['birth_date'])) ?></td>
                             <td>
-                                <span class="gender-badge">
-                                    <?= $user['gender'] == 'male' ? '👨 М' : '👩 Ж' ?>
+                                <span class="gender-badge <?= $user['gender'] ?>">
+                                    <?= $user['gender'] == 'male' ? 'Мужской' : 'Женский' ?>
                                 </span>
                             </td>
                             <td>

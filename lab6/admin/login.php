@@ -1,32 +1,34 @@
 <?php
 session_start();
 
-// Если уже авторизован
 if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true) {
     header('Location: index.php');
     exit;
 }
 
-// Обработка отправки формы
 $error = '';
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    require_once __DIR__ . '/../config/database.php';
+
     $username = $_POST['username'] ?? '';
     $password = $_POST['password'] ?? '';
 
-    require_once __DIR__ . '/../config/database.php';
-    $pdo = getDBConnection();
+    try {
+        $pdo = getDBConnection();
+        $stmt = $pdo->prepare("SELECT * FROM admin_users WHERE username = ?");
+        $stmt->execute([$username]);
+        $admin = $stmt->fetch();
 
-    $stmt = $pdo->prepare("SELECT * FROM admin_users WHERE username = ?");
-    $stmt->execute([$username]);
-    $admin = $stmt->fetch();
-
-    if ($admin && password_verify($password, $admin['password_hash'])) {
-        $_SESSION['admin_logged_in'] = true;
-        $_SESSION['admin_username'] = $username;
-        header('Location: index.php');
-        exit;
-    } else {
-        $error = 'Неверный логин или пароль';
+        if ($admin && password_verify($password, $admin['password_hash'])) {
+            $_SESSION['admin_logged_in'] = true;
+            $_SESSION['admin_username'] = $username;
+            header('Location: index.php');
+            exit;
+        } else {
+            $error = 'Неверный логин или пароль';
+        }
+    } catch (PDOException $e) {
+        $error = 'Ошибка базы данных';
     }
 }
 ?>
@@ -37,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <title>Вход в админ-панель</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Arial, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             height: 100vh;
             display: flex;
@@ -56,6 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             text-align: center;
             color: #333;
             margin-bottom: 30px;
+            font-size: 24px;
         }
         .form-group {
             margin-bottom: 20px;
@@ -64,14 +67,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             display: block;
             margin-bottom: 5px;
             color: #555;
+            font-weight: 500;
         }
         input {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             border: 2px solid #e1e1e1;
             border-radius: 5px;
-            font-size: 16px;
+            font-size: 14px;
             box-sizing: border-box;
+            transition: border-color 0.3s;
         }
         input:focus {
             border-color: #667eea;
@@ -85,7 +90,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             border: none;
             border-radius: 5px;
             font-size: 16px;
+            font-weight: 600;
             cursor: pointer;
+            transition: background 0.3s;
         }
         button:hover {
             background: #5a67d8;
@@ -93,10 +100,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         .error {
             background: #fee;
             color: #c33;
-            padding: 10px;
+            padding: 12px;
             border-radius: 5px;
             margin-bottom: 20px;
             text-align: center;
+            border-left: 4px solid #c33;
         }
     </style>
 </head>
@@ -111,7 +119,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <form method="POST">
             <div class="form-group">
                 <label>Логин</label>
-                <input type="text" name="username" required>
+                <input type="text" name="username" required autofocus>
             </div>
             <div class="form-group">
                 <label>Пароль</label>
