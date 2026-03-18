@@ -1,7 +1,4 @@
-# В файле lab6/admin/.htaccess
-<Files "*.php">
-    AuthType Basic
-    AuthName "Admin Panel"
-    AuthUserFile /home/u82269/www/web4/lab6/admin/.htpasswd
-    Require valid-user
-</Files>
+AuthType Basic
+AuthName "Admin Panel"
+AuthUserFile /home/u82269/www/web4/lab6/admin/.htpasswd
+Require valid-user
