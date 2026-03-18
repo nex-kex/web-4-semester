@@ -30,7 +30,7 @@ function generateLogin($full_name) {
     return $baseLogin . rand(100, 999);
 }
 
-// Функция валидации (та же)
+// Функция валидации
 function validateForm($data) {
     $errors = [];
     $fieldErrors = [];
@@ -147,18 +147,37 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         // Подключение к БД
         $pdo = new PDO("mysql:host=$db_host;dbname=$db_name;charset=utf8", $db_user, $db_pass);
-        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERR
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+        // Генерация логина и пароля
+        $login = generateLogin($_POST['full_name']);
+
+        // Проверка уникальности логина
+        while (true) {
+            $checkStmt = $pdo->prepare("SELECT id FROM application WHERE login = ?");
+            $checkStmt->execute([$login]);
+            if (!$checkStmt->fetch()) {
+                break;
+            }
+            $login = generateLogin($_POST['full_name']) . rand(10, 99);
+        }
+
+        // Генерация пароля
+        $password = bin2hex(random_bytes(4)); // 8 символов
+        $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
         // Начинаем транзакцию
         $pdo->beginTransaction();
 
-        // Вставляем основную анкету
+        // Вставляем основную анкету с логином и паролем
         $stmt = $pdo->prepare("
-            INSERT INTO application (full_name, phone, email, birth_date, gender, biography, contract_accepted)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO application (login, password_hash, full_name, phone, email, birth_date, gender, biography, contract_accepted)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         ");
 
         $stmt->execute([
+            $login,
+            $passwordHash,
             trim($_POST['full_name']),
             trim($_POST['phone']),
             trim($_POST['email']),
@@ -179,14 +198,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         // Подтверждаем транзакцию
         $pdo->commit();
 
-        // При успехе сохраняем данные в cookies на год
+        // Сохраняем данные в cookies
         setcookie('form_data', json_encode($_POST), time() + 365*24*60*60, '/');
-
-        // Удаляем ошибки если были
         setcookie('form_errors', '', time() - 3600, '/');
 
-        // Успех
-        header("Location: form.php?success=1&id=$application_id");
+        // Перенаправляем на страницу с отображением логина и пароля
+        header("Location: login.php?registered=1&login=$login&password=$password");
         exit;
 
     } catch (PDOException $e) {
@@ -194,9 +211,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $pdo->rollBack();
         }
 
-        // Сохраняем данные при ошибке БД
         setcookie('form_data', json_encode($_POST), time() + 365*24*60*60, '/');
-
         $errorMsg = urlencode('Ошибка базы данных: ' . $e->getMessage());
         header("Location: form.php?error=$errorMsg");
         exit;
