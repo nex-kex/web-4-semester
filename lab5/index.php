@@ -28,15 +28,25 @@ function generateLogin($full_name) {
     // Транслитерация фамилии
     $lastNameTrans = strtr($lastName, $translit);
 
-    // Берем первую букву имени (просто первый символ)
-    $firstInitial = mb_substr ? mb_substr($firstName, 0, 1) : substr($firstName, 0, 1);
+    // Берем первую букву имени
+    if (function_exists('mb_substr')) {
+        $firstInitial = mb_substr($firstName, 0, 1, 'UTF-8');
+    } else {
+        $firstInitial = substr($firstName, 0, 1);
+    }
 
+    // Если не получилось взять первый символ, берем пустую строку
     if (!$firstInitial && strlen($firstName) > 0) {
         $firstInitial = $firstName[0];
     }
 
     $baseLogin = strtolower($lastNameTrans . $firstInitial);
     $baseLogin = preg_replace('/[^a-z0-9]/', '', $baseLogin);
+
+    // Если логин получился пустым, генерируем случайный
+    if (empty($baseLogin)) {
+        $baseLogin = 'user' . rand(1000, 9999);
+    }
 
     // Добавляем случайное число для уникальности
     return $baseLogin . rand(100, 999);
