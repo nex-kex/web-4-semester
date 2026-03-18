@@ -1,32 +1,14 @@
 <?php
-session_start();
+// session_start();
+//
+// // Проверка авторизации
+// if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
+//     header('Location: login.php');
+//     exit;
+// }
 
-// Проверка авторизации
-if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
-    header('Location: login.php');
-    exit;
-}
-
-require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../includes/functions.php';
 
-$username = $_SERVER['PHP_AUTH_USER'];
-$password = $_SERVER['PHP_AUTH_PW'];
-
-// Проверка в БД
-$pdo = getDBConnection();
-$stmt = $pdo->prepare("SELECT * FROM admin_users WHERE username = ?");
-$stmt->execute([$username]);
-$admin = $stmt->fetch();
-
-if (!$admin || !password_verify($password, $admin['password_hash'])) {
-    header('WWW-Authenticate: Basic realm="Admin Panel"');
-    header('HTTP/1.0 401 Unauthorized');
-    echo 'Неверный логин или пароль';
-    exit;
-}
-
-// Успешная авторизация - показываем страницу
 // Получаем данные
 $users = getAllUsers();
 $stats = getLanguageStats();
