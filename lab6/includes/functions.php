@@ -1,7 +1,14 @@
 <?php
 require_once __DIR__ . '/../config/database.php';
 
-// Получение списка всех пользователей
+// Получение списка языков для формы
+function getLanguages() {
+    $pdo = getDBConnection();
+    $stmt = $pdo->query("SELECT id, name FROM programming_languages ORDER BY name");
+    return $stmt->fetchAll();
+}
+
+// Получение всех пользователей
 function getAllUsers() {
     $pdo = getDBConnection();
     $stmt = $pdo->query("
@@ -16,7 +23,7 @@ function getAllUsers() {
     return $stmt->fetchAll();
 }
 
-// Получение данных пользователя по ID
+// Получение пользователя по ID
 function getUserById($id) {
     $pdo = getDBConnection();
     $stmt = $pdo->prepare("
@@ -41,13 +48,6 @@ function getLanguageStats() {
         GROUP BY pl.id, pl.name
         ORDER BY user_count DESC, pl.name
     ");
-    return $stmt->fetchAll();
-}
-
-// Получение списка языков для формы
-function getLanguages() {
-    $pdo = getDBConnection();
-    $stmt = $pdo->query("SELECT id, name FROM programming_languages ORDER BY name");
     return $stmt->fetchAll();
 }
 
