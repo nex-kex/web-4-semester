@@ -156,7 +156,70 @@ $error = $_GET['error'] ?? '';
 
         .actions {
             display: flex;
-            gap: 10px;
+            gap: 8px;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s;
+            white-space: nowrap;
+            border: none;
+            cursor: pointer;
+            text-align: center;
+            min-width: 70px;
+        }
+
+        .action-edit {
+            background: #ffc107;
+            color: #333;
+            border: 1px solid #e0a800;
+        }
+
+        .action-edit:hover {
+            background: #e0a800;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 5px rgba(255, 193, 7, 0.3);
+        }
+
+        .action-delete {
+            background: #dc3545;
+            color: white;
+            border: 1px solid #c82333;
+        }
+
+        .action-delete:hover {
+            background: #c82333;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 5px rgba(220, 53, 69, 0.3);
+        }
+
+        /* Адаптация для мобильных устройств */
+        @media (max-width: 1024px) {
+            .actions {
+                flex-direction: column;
+                gap: 5px;
+            }
+
+            .action-btn {
+                width: 100%;
+                white-space: normal;
+                padding: 8px 12px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .action-btn {
+                font-size: 12px;
+                padding: 6px 10px;
+                min-width: 60px;
+            }
         }
 
         .btn-edit {
@@ -345,10 +408,10 @@ $error = $_GET['error'] ?? '';
                             </td>
                             <td>
                                 <div class="actions">
-                                    <a href="edit.php?id=<?= $user['id'] ?>" class="btn-edit">✏️ Ред.</a>
+                                    <a href="edit.php?id=<?= $user['id'] ?>" class="action-btn action-edit">Изменить</a>
                                     <a href="delete.php?id=<?= $user['id'] ?>"
-                                       class="btn-delete"
-                                       onclick="return confirm('Удалить пользователя <?= htmlspecialchars($user['full_name']) ?>?')">🗑️ Уд.</a>
+                                       class="action-btn action-delete"
+                                       onclick="return confirm('Удалить пользователя <?= htmlspecialchars($user['full_name']) ?>?')">Удалить</a>
                                 </div>
                             </td>
                         </tr>
