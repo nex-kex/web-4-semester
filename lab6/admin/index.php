@@ -231,7 +231,33 @@ $error = $_GET['error'] ?? '';
             display: inline-block;
         }
 
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            text-align: center;
+            white-space: nowrap; /* Запрещаем перенос на новую строку */
+            min-width: 70px;
+        }
+
+        .status-new {
+            background: #28a745;
+            color: white;
+        }
+
+        .status-edited {
+            background: #ffc107;
+            color: #333;
+        }
+
+        /* Для мобильных устройств можно разрешить перенос */
         @media (max-width: 768px) {
+            .status-badge {
+                white-space: normal;
+                min-width: auto;
+            }
             .header {
                 flex-direction: column;
                 gap: 15px;
@@ -312,9 +338,9 @@ $error = $_GET['error'] ?? '';
                             </td>
                             <td>
                                 <?php if ($user['is_edited']): ?>
-                                    <span class="badge edited-badge">✏️ Изменено</span>
+                                    <span class="status-badge status-edited">Изменено</span>
                                 <?php else: ?>
-                                    <span class="badge">✅ Новый</span>
+                                    <span class="status-badge status-new">Новый</span>
                                 <?php endif; ?>
                             </td>
                             <td>
