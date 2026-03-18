@@ -343,7 +343,7 @@ function getErrorMessage($fieldName, $fieldErrors) {
                            class="<?= hasError('birth_date', $fieldErrors) ?>"
                            value="<?= htmlspecialchars($formData['birth_date'] ?? '') ?>">
                     <div class="hint">
-                        <strong>Допустимо:</strong> дата в формате ГГГГ-ММ-ДД (например: 1990-05-15), не может быть в будущем
+                        <strong>Допустимо:</strong> дата в формате ДД.ММ.ГГГГ (например: 15.05.1990), не может быть в будущем
                     </div>
                     <?php if ($msg = getErrorMessage('birth_date', $fieldErrors)): ?>
                         <div class="field-error-message"><?= htmlspecialchars($msg) ?></div>
