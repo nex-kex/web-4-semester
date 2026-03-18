@@ -1,0 +1,32 @@
+DELETE FROM application_languages;
+DELETE FROM application;
+
+ALTER TABLE application AUTO_INCREMENT = 1;
+ALTER TABLE application_languages AUTO_INCREMENT = 1;
+
+SELECT
+    a.id AS 'id',
+    a.full_name AS 'full_name',
+    a.phone AS 'phone',
+    a.email AS 'email',
+    DATE_FORMAT(a.birth_date, '%d.%m.%Y') AS 'birth_date',
+    CASE a.gender
+        WHEN 'male' THEN 'Мужской'
+        WHEN 'female' THEN 'Женский'
+    END AS 'gender',
+    CASE
+        WHEN LENGTH(a.biography) > 70
+        THEN CONCAT(LEFT(a.biography, 70), '...')
+        ELSE a.biography
+    END AS 'biography',
+    COALESCE(GROUP_CONCAT(pl.name ORDER BY pl.name SEPARATOR ', '), 'Нет языков') AS 'languages',
+    CASE a.contract_accepted
+        WHEN 1 THEN 'Да'
+        ELSE 'Нет'
+    END AS 'contract_accepted',
+    DATE_FORMAT(a.created_at, '%d.%m.%Y %H:%i') AS 'created_at'
+FROM application a
+LEFT JOIN application_languages al ON a.id = al.application_id
+LEFT JOIN programming_languages pl ON al.language_id = pl.id
+GROUP BY a.id
+ORDER BY a.created_at DESC;
