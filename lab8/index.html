@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bull Gym - Фитнес клуб в Краснодаре</title>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Roboto:wght@300;400;500;700&display=swap"
+          rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<!-- Заголовок -->
+<header class="header" id="header">
+    <div class="container">
+        <div class="header-content">
+            <div class="logo">BULL GYM</div>
+            <button class="burger-menu" id="burgerMenu" aria-label="Меню">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <nav class="nav" id="nav">
+                <ul class="nav-list">
+                    <li class="nav-item"><a href="#hero" class="nav-link">Главная</a></li>
+                    <li class="nav-item dropdown">
+                        <a href="#" class="nav-link">О нас <span class="arrow">▼</span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#activity" class="dropdown-link">О нас</a></li>
+                            <li><a href="#team" class="dropdown-link">Наша команда</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a href="#" class="nav-link">Тарифы <span class="arrow">▼</span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#pricing" class="dropdown-link">Клубные карты</a></li>
+                            <li><a href="#special" class="dropdown-link">Специальные тарифы</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item"><a href="#reviews" class="nav-link">Отзывы</a></li>
+                    <li class="nav-item"><a href="#faq" class="nav-link">FAQ</a></li>
+                    <li class="nav-item"><a href="#contacts" class="nav-link">Контакты</a></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</header>
+
+<!-- Главная -->
+<section class="hero" id="hero">
+    <div class="video-background">
+        <video class="hero-video" autoplay muted loop playsinline>
+            <source src="media/video.mp4" type="video/mp4">
+        </video>
+    </div>
+    <div class="hero-overlay"></div>
+    <div class="container">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1 class="hero-title">BULL GYM — фитнес, в который возвращаются за результатом</h1>
+                <p class="hero-subtitle">Неделя тренировок с персональным тренером — в подарок*</p>
+            </div>
+            <div class="hero-features">
+                <div class="feature-item">
+                    <div class="feature-icon">🏃</div>
+                    <h3>20+ беговых дорожек</h3>
+                    <p>Без очереди в любое время</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">💆</div>
+                    <h3>10 видов массажа</h3>
+                    <p>От массажистов-профессионалов</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">📏</div>
+                    <h3>600 м² площадь</h3>
+                    <p>Просторная тренажерная зона</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🏋️</div>
+                    <h3>20+ видов занятий</h3>
+                    <p>Для любого уровня подготовки</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">👥</div>
+                    <h3>34 фитнес тренера</h3>
+                    <p>Профессионалы своего дела</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">❤️</div>
+                    <h3>96% постоянных клиентов</h3>
+                    <p>Нам доверяют и возвращаются</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Деятельность -->
+<section class="activity" id="activity">
+    <div class="container">
+        <h2 class="section-title">О нас</h2>
+        <div class="activity-content">
+            <div class="activity-text">
+                <p>Bull Gym — это не просто набор упражнений, а работа с командой профессионалов, которая знает, как
+                    довести вас до цели. Наши тренеры — эксперты, с которыми мы начали путь с первого дня клуба, и
+                    которые продолжают совершенствовать свои методики.</p>
+                <p>Мы используем только профессиональное оборудование <b>«Impulse»</b> (производство США), которое
+                    действительно работает на ваш прогресс, и создаём атмосферу, в которой легко поверить в себя.
+                    Удобный график с 6:00 до 00:00 позволяет тренироваться даже при самом насыщенном дне.</p>
+                <p>Здесь вы чувствуете поддержку на каждом шаге, а результаты становятся естественной частью жизни.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Клубные карты -->
+<section class="pricing" id="pricing">
+    <div class="container">
+        <h2 class="section-title">Клубные карты</h2>
+        <div class="pricing-cards">
+            <!-- 1 месяц -->
+            <div class="pricing-card">
+                <div class="card-image">
+                    <img src="https://static.tildacdn.com/tild3331-3433-4764-b735-393738353165/38d36bd0-ce12-4615-a.png"
+                         alt="1 месяц">
+                </div>
+                <h3 class="pricing-name">1 месяц</h3>
+                <div class="pricing-price">
+                    <span class="old-price">7 900 ₽</span> 5 900 ₽
+                </div>
+                <ul class="pricing-features">
+                    <li>Доступ в клуб</li>
+                    <li>1 занятие с персональным тренером</li>
+                    <li>Хаммам</li>
+                    <li>Бесплатные групповые тренировки</li>
+                </ul>
+                <button class="pricing-btn"><a href="#contacts">Купить онлайн</a></button>
+            </div>
+            <!-- 3 месяца -->
+            <div class="pricing-card">
+                <div class="card-image">
+                    <img src="https://static.tildacdn.com/tild6366-3337-4631-b531-373366613030/fb1479c6-2900-49d2-9.png"
+                         alt="3 месяца">
+                </div>
+                <h3 class="pricing-name">3 месяца</h3>
+                <div class="pricing-price">
+                    <span class="old-price">12 900 ₽</span> 10 900 ₽
+                </div>
+                <ul class="pricing-features">
+                    <li>Доступ в клуб</li>
+                    <li>1 занятие с персональным тренером</li>
+                    <li>Хаммам</li>
+                    <li>Бесплатные групповые тренировки</li>
+                </ul>
+                <button class="pricing-btn"><a href="#contacts">Купить онлайн</a></button>
+            </div>
+            <!-- 6 месяцев -->
+            <div class="pricing-card">
+                <div class="card-image">
+                    <img src="https://static.tildacdn.com/tild6537-6538-4837-b261-393362643238/b0e473b4-4193-4dab-9.png"
+                         alt="6 месяцев">
+                </div>
+                <h3 class="pricing-name">6 месяцев</h3>
+                <div class="pricing-price">
+                    <span class="old-price">18 990 ₽</span> 14 900 ₽
+                </div>
+                <ul class="pricing-features">
+                    <li>Доступ в клуб</li>
+                    <li>1 занятие с персональным тренером</li>
+                    <li>Хаммам</li>
+                    <li>Бесплатные групповые тренировки</li>
+                    <li>30 дней заморозки</li>
+                </ul>
+                <button class="pricing-btn"><a href="#contacts">Купить онлайн</a></button>
+            </div>
+            <!-- 9 месяцев -->
+            <div class="pricing-card">
+                <div class="card-image">
+                    <img src="https://static.tildacdn.com/tild6366-3337-4631-b531-373366613030/fb1479c6-2900-49d2-9.png"
+                         alt="9 месяцев">
+                </div>
+                <h3 class="pricing-name">9 месяцев</h3>
+                <div class="pricing-price">
+                    <span class="old-price">23 900 ₽</span> 17 900 ₽
+                </div>
+                <ul class="pricing-features">
+                    <li>Доступ в клуб</li>
+                    <li>1 занятие с персональным тренером</li>
+                    <li>Хаммам</li>
+                    <li>Бесплатные групповые тренировки</li>
+                    <li>90 дней заморозки</li>
+                </ul>
+                <button class="pricing-btn"><a href="#contacts">Купить онлайн</a></button>
+            </div>
+            <!-- 12 месяцев -->
+            <div class="pricing-card">
+                <div class="card-image">
+                    <img src="https://static.tildacdn.com/tild3331-3433-4764-b735-393738353165/38d36bd0-ce12-4615-a.png"
+                         alt="12 месяцев">
+                </div>
+                <h3 class="pricing-name">12 месяцев</h3>
+                <div class="pricing-price">
+                    <span class="old-price">28 900 ₽</span> 20 900 ₽
+                </div>
+                <ul class="pricing-features">
+                    <li>Доступ в клуб</li>
+                    <li>1 занятие с персональным тренером</li>
+                    <li>Хаммам</li>
+                    <li>Бесплатные групповые тренировки</li>
+                    <li>60 дней заморозки</li>
+                </ul>
+                <button class="pricing-btn"><a href="#contacts">Купить онлайн</a></button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Специальные тарифы -->
+<section class="special-pricing" id="special">
+    <div class="container">
+        <h2 class="section-title">Специальные тарифы</h2>
+        <div class="special-grid">
+            <div class="special-card">
+                <h3 class="special-name">Разовое</h3>
+                <div class="special-price">1 000 ₽</div>
+                <button class="pricing-btn"><a href="#contacts">Купить онлайн</a></button>
+            </div>
+            <div class="special-card">
+                <h3 class="special-name">Неделя фитнеса</h3>
+                <div class="special-price">2 500 ₽</div>
+                <button class="pricing-btn"><a href="#contacts">Купить онлайн</a></button>
+            </div>
+            <div class="special-card">
+                <h3 class="special-name">Студент 9 мес.</h3>
+                <div class="special-price">14 900 ₽</div>
+                <div class="special-desc">+90 дней заморозки</div>
+                <button class="pricing-btn"><a href="#contacts">Купить онлайн</a></button>
+            </div>
+            <div class="special-card">
+                <h3 class="special-name">Пенсионный 12 мес.</h3>
+                <div class="special-price">14 900 ₽</div>
+                <div class="special-desc">+30 дней заморозки</div>
+                <button class="pricing-btn"><a href="#contacts">Купить онлайн</a></button>
+            </div>
+            <div class="special-card">
+                <h3 class="special-name">Утро 12 мес.</h3>
+                <div class="special-price">15 900 ₽</div>
+                <div class="special-desc">Вход с 6:00 до 14:00</div>
+                <button class="pricing-btn"><a href="#contacts">Купить онлайн</a></button>
+            </div>
+            <div class="special-card">
+                <h3 class="special-name">Дуэт 12 мес.</h3>
+                <div class="special-price">15 900 ₽</div>
+                <div class="special-desc">
+                    <p>При одновременной покупке двух абонементов</p>
+                    <small>Цена тарифа указана с человека*</small>
+                </div>
+                <button class="pricing-btn"><a href="#contacts">Купить онлайн</a></button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Команда (Слайдер) -->
+<section class="team" id="team">
+    <div class="container">
+        <h2 class="section-title">Наша команда</h2>
+        <div class="team-carousel">
+            <button class="carousel-btn team-prev" id="teamPrevBtn" aria-label="Предыдущие тренеры">‹</button>
+            <div class="team-wrapper">
+                <div class="team-container" id="teamContainer">
+                    <!-- Андрей Сычев -->
+                    <div class="team-member">
+                        <div class="team-photo">
+                            <img src="https://static.tildacdn.com/tild3035-3564-4333-b531-303339626534/76841650-d7d9-46a2-8.png"
+                                 alt="Андрей Сычев">
+                        </div>
+                        <div class="team-info">
+                            <h3 class="team-name">Андрей Сычев</h3>
+                            <div class="team-exp">Стаж работы – более 20 лет.</div>
+                            <div class="team-spec"><strong>Специализация:</strong> персональные тренировки, бодибилдинг
+                            </div>
+                            <p class="team-description">Мастер спорта и чемпион России по бодибилдингу, призёр Европы и
+                                Мира. Делится опытом профессионального спорта, помогает достигать максимальных
+                                результатов.</p>
+                        </div>
+                    </div>
+                    <!-- Вячеслав Евсюков -->
+                    <div class="team-member">
+                        <div class="team-photo">
+                            <img src="https://static.tildacdn.com/tild3130-6232-4339-b838-323761643961/IMG_3366.JPG"
+                                 alt="Вячеслав Евсюков">
+                        </div>
+                        <div class="team-info">
+                            <h3 class="team-name">Вячеслав Евсюков</h3>
+                            <div class="team-exp"><strong>Стаж:</strong> тренерский более 11 лет, общий в спорте 21 год
+                            </div>
+                            <div class="team-spec"><strong>Специализация:</strong> пауэрлифтинг, персональные тренировки
+                            </div>
+                            <p class="team-description">Мастер спорта, чемпион юга России по пауэрлифтингу. Совмещает
+                                научный подход и многолетнюю практику.</p>
+                        </div>
+                    </div>
+                    <!-- Александр Елисеев -->
+                    <div class="team-member">
+                        <div class="team-photo">
+                            <img src="https://static.tildacdn.com/tild3464-3966-4931-a264-653562396162/noroot.png"
+                                 alt="Александр Елисеев">
+                        </div>
+                        <div class="team-info">
+                            <h3 class="team-name">Александр Елисеев</h3>
+                            <div class="team-exp"><strong>Стаж:</strong> более 7 лет</div>
+                            <div class="team-spec"><strong>Специализация:</strong> восстановление после операций,
+                                детские тренировки, кинезиология
+                            </div>
+                            <p class="team-description">Мастер спорта по гандболу, чемпион Крыма по бодибилдингу.
+                                Работает с взрослыми и детьми, помогает восстанавливаться после травм.</p>
+                        </div>
+                    </div>
+                    <!-- Михаил Коновалов -->
+                    <div class="team-member">
+                        <div class="team-photo">
+                            <img src="https://static.tildacdn.com/tild3137-3037-4233-a330-366338343530/noroot_1.png"
+                                 alt="Михаил Коновалов">
+                        </div>
+                        <div class="team-info">
+                            <h3 class="team-name">Михаил Коновалов</h3>
+                            <div class="team-exp"><strong>Стаж:</strong> более 9 лет, в спорте 17 лет</div>
+                            <div class="team-spec"><strong>Специализация:</strong> персональные тренировки, программы
+                                питания
+                            </div>
+                            <p class="team-description">КМС по тяжёлой атлетике, участник чемпионатов по бодибилдингу.
+                                Составляет индивидуальные тренировки и рацион, работает и в онлайн-формате.</p>
+                        </div>
+                    </div>
+                    <!-- Иван Дзюба -->
+                    <div class="team-member">
+                        <div class="team-photo">
+                            <img src="https://static.tildacdn.com/tild6536-6266-4761-b837-643733356466/noroot_2.png"
+                                 alt="Иван Дзюба">
+                        </div>
+                        <div class="team-info">
+                            <h3 class="team-name">Иван Дзюба</h3>
+                            <div class="team-exp"><strong>Стаж:</strong> более 8 лет</div>
+                            <div class="team-spec"><strong>Специализация:</strong> бодибилдинг, персональные тренировки,
+                                массаж
+                            </div>
+                            <p class="team-description">Чемпион соревнований по бодибилдингу, сертифицированный тренер и
+                                массажист. Совмещает тренировки с восстановительными практиками.</p>
+                        </div>
+                    </div>
+                    <!-- Мхитар Давовян (Давоян) -->
+                    <div class="team-member">
+                        <div class="team-photo">
+                            <img src="https://static.tildacdn.com/tild6534-3161-4937-a132-633334633434/noroot_3.png"
+                                 alt="Мхитар Давоян">
+                        </div>
+                        <div class="team-info">
+                            <h3 class="team-name">Мхитар Давоян</h3>
+                            <div class="team-exp"><strong>Стаж:</strong> тренерский более 5 лет, в спорте более 10 лет
+                            </div>
+                            <div class="team-spec"><strong>Специализация:</strong> боевые искусства, персональные
+                                тренировки
+                            </div>
+                            <p class="team-description">Опыт в самбо, борьбе, плавании, кикбоксинге, карате. Помогает
+                                развить силу, выносливость и боевой характер.</p>
+                        </div>
+                    </div>
+                    <!-- Михаил Шапошник -->
+                    <div class="team-member">
+                        <div class="team-photo">
+                            <img src="https://static.tildacdn.com/tild3633-3564-4732-b034-343938613763/noroot_4.png"
+                                 alt="Михаил Шапошник">
+                        </div>
+                        <div class="team-info">
+                            <h3 class="team-name">Михаил Шапошник</h3>
+                            <div class="team-exp"><strong>Стаж:</strong> с 2014 года</div>
+                            <div class="team-spec"><strong>Специализация:</strong> функциональный тренинг, CrossFit,
+                                реабилитация
+                            </div>
+                            <p class="team-description">Мастер спорта по пауэрспорту, чемпион международных турниров.
+                                Совмещает современный подход к тренировкам и восстановлению.</p>
+                        </div>
+                    </div>
+                    <!-- Лидия Шапошник -->
+                    <div class="team-member">
+                        <div class="team-photo">
+                            <img src="https://static.tildacdn.com/tild3631-3465-4264-a230-336135343134/noroot_5.png"
+                                 alt="Лидия Шапошник">
+                        </div>
+                        <div class="team-info">
+                            <h3 class="team-name">Лидия Шапошник</h3>
+                            <div class="team-exp"><strong>Стаж:</strong> с 2010 года</div>
+                            <div class="team-spec"><strong>Специализация:</strong> Pilates, коррекция осанки,
+                                функциональный тренинг
+                            </div>
+                            <p class="team-description">Магистр физкультуры, автор публикаций и международных программ.
+                                Помогает улучшать здоровье, гибкость и фигуру.</p>
+                        </div>
+                    </div>
+                    <!-- Сергей Воронянский -->
+                    <div class="team-member">
+                        <div class="team-photo">
+                            <img src="https://static.tildacdn.com/tild6562-3932-4265-b464-376338393037/noroot_6.png"
+                                 alt="Сергей Воронянский">
+                        </div>
+                        <div class="team-info">
+                            <h3 class="team-name">Сергей Воронянский</h3>
+                            <div class="team-exp"><strong>Стаж:</strong> более 10 лет</div>
+                            <div class="team-spec"><strong>Специализация:</strong> бодибилдинг, персональные тренировки
+                            </div>
+                            <p class="team-description">В спорте более 15 лет. Работает над гармоничным развитием тела и
+                                индивидуальным подходом.</p>
+                        </div>
+                    </div>
+                    <!-- Михаил Лебедев -->
+                    <div class="team-member">
+                        <div class="team-photo">
+                            <img src="https://static.tildacdn.com/tild3933-6434-4230-b233-393138373931/noroot_7.png"
+                                 alt="Михаил Лебедев">
+                        </div>
+                        <div class="team-info">
+                            <h3 class="team-name">Михаил Лебедев</h3>
+                            <div class="team-exp"><strong>Стаж:</strong> с 2015 года, в фитнесе более 11 лет</div>
+                            <div class="team-spec"><strong>Специализация:</strong> коррекция осанки, питание, силовые
+                                тренировки
+                            </div>
+                            <p class="team-description">Мастер спорта по жиму лёжа, сертифицированный нутрициолог.
+                                Подбирает программы для здоровья и гармоничного развития тела.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button class="carousel-btn team-next" id="teamNextBtn" aria-label="Следующие тренеры">›</button>
+        </div>
+    </div>
+</section>
+
+<!-- Отзывы -->
+<section class="reviews" id="reviews">
+    <div class="container">
+        <h2 class="section-title">Отзывы клиентов о BULL GYM</h2>
+        <div class="reviews-grid">
+            <div class="review-card">
+                <h3 class="review-name">Илья М.</h3>
+                <p class="review-text">Самый родной, уютный, любимый и вообще один такой где всё "+" зал... С любовью и
+                    знанием дела ведут работу клуба руководители, отзывчивые профессиональные персональные тренеры и
+                    инструкторы групповых программ, всегда чистенько и довольные улыбки сограждан-клиентов. С чистым
+                    сердцем рекомендую присоединяться к нашей большой дружной семье и подписываться на телеграмм-канал
+                    клуба, - там кроме прочего еще и день через день веселые юморэски импровизированные. Не тренажерка,
+                    а живой организм с развитой инфраструктурой и Большущим добрым Сердцем!</p>
+            </div>
+            <div class="review-card">
+                <h3 class="review-name">Валерия Малышева</h3>
+                <p class="review-text">К выбору клуба и тренера подходила максимально скрупулезно. Для меня важными
+                    критериями были: комфортное пространство, хорошая вентиляция, дружелюбный персонал, качественные
+                    тренажеры, удобные подъездные пути, первый этаж клуба - это, что касается первостепенных моментов.
+                    Второе и основное, это правильно структурированные занятия для достижения желаемого результата - это
+                    работа своя, либо своя и тренера, которому Вы доверяете. Я выбрала второй вариант) Михаил Лебедев,
+                    большое спасибо за качественные занятия! Тренер все 100% времени уделяем Вам, до мелочей следит за
+                    техникой выполнения упражнений, помогает наладить питание, более того, с Михаилом психологически
+                    комфортно. Клуб и тренера однозначно рекомендую 👌</p>
+            </div>
+            <div class="review-card">
+                <h3 class="review-name">Анатолий Т.</h3>
+                <p class="review-text">Очень нравится зал- много тренажёров, инвентаря, даже когда наплыв людей
+                    комфортно можно закончить программу. Хорошая вентиляция, чистые раздевалки и душевые. Тренера
+                    отзывчивые. Администраторы приветливые. А ещё клуб подходит для интровертов- без личной
+                    необходимости не нужно ни с кем общаться)) При покупке абонемента дают код на вход, с собой берёшь
+                    замок, и в след.раз просто заходишь в клуб, вводишь код на вертушке, проходишь в раздевалку,
+                    переодеваешься, идёшь в зал, занимаешься и можешь ни с кем не общаться, вот прямо вообще! Когда
+                    достали на работе- отличный способ перезагрузки! Рекомендую!</p>
+            </div>
+            <div class="review-card">
+                <h3 class="review-name">Алена</h3>
+                <p class="review-text">Отличный спортзал, особенно нравится тренер Михаил, четко нацелен на результат,
+                    за каждого подопечного переживает как за родного🙈. Кроме тренировок дает рекомендации по питанию. В
+                    целом в спортзпле всегда чисто, удобные раздевалки, есть хамам и солярий. В кафе всегда вкусный
+                    капучино, большой выбор пп блюди, протеиновые коктейли и пп сладости. Рекомендую)</p>
+            </div>
+            <div class="review-card">
+                <h3 class="review-name">Наталья Климова</h3>
+                <p class="review-text">Просторный зал, профессиональные тренеры групповых, всегда чисто в раздевалке и
+                    туалетах. Нравится расписание, направления групповых занятий разнообразные, и на растяжку, и на
+                    подтяжку всех мышц, и для здоровья спины. Все в комфортное для работающих время. Достаточно беговых
+                    дорожек и эллипсов. Володина Екатерина - лучший тренер групповых занятий ღ</p>
+            </div>
+            <div class="review-card">
+                <h3 class="review-name">Татьяна Б.</h3>
+                <p class="review-text">Хороший зал и групповые👍нравится, что люди действительно приходят позаниматься.
+                    Занималась с Лебедевым Мишей- отличный тренер. Тренировки супер, по питанию консультирует, про
+                    отчеты по питанию напоминает 😂( если не отправила) Да и вообще как человек классный, легкое общение,
+                    всегда можно поржать 😀 Так же администраторы/ менеджеры хорошие. Рекомендую зал и тренера 👍</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Контакты -->
+<section class="contacts" id="contacts">
+    <div class="container">
+        <div class="contacts-content">
+            <div class="contacts-info">
+                <h2 class="section-title">Оставить заявку</h2>
+                <p class="contacts-text">Здесь вы можете оставить заявку на персональную тренировку, задать вопрос или
+                    оставить отзыв.</p>
+                <p class="contacts-text">Если оставите комментарий пустым — будем считать, что вы планируете записаться
+                    на тренировку <span class="emoji">😉</span></p>
+                <div class="contact-item">
+                    <strong>Телефон:</strong>
+                    <a href="tel:+79673000751">+7 (967) 300-07-51</a>
+                </div>
+                <div class="contact-item">
+                    <strong>Email:</strong>
+                    <a href="mailto:info@bull-gym.ru">info@bull-gym.ru</a>
+                </div>
+                <div class="contact-item">
+                    <strong>Адрес:</strong>
+                    <p>Краснодар, Юбилейный микрорайон, ул. Рождественская набережная 31/2</p>
+                </div>
+                <div class="contact-item">
+                    <strong>Время работы:</strong>
+                    <p>Пн-Пт: 6:00 – 00:00<br>Сб-Вс: 8:00 – 22:00</p>
+                </div>
+            </div>
+            <form class="contact-form" id="contactForm">
+                <h3 class="form-title">Свяжитесь с нами</h3>
+                <div class="form-group">
+                    <input type="text" id="name" name="name" placeholder="Имя" required>
+                </div>
+                <div class="form-group">
+                    <input type="tel" id="phone" name="phone" placeholder="Телефон" required>
+                </div>
+                <div class="form-group">
+                    <input type="email" id="email" name="email" placeholder="Почта" required>
+                </div>
+                <div class="form-group">
+                    <textarea id="comment" name="comment" placeholder="Комментарий" rows="5"></textarea>
+                </div>
+                <button type="submit" class="submit-btn">Отправить</button>
+                <div class="form-message" id="formMessage"></div>
+            </form>
+        </div>
+    </div>
+</section>
+
+<!-- Вопросы и ответы -->
+<section class="faq" id="faq">
+    <div class="container">
+        <h2 class="section-title">Часто задаваемые вопросы</h2>
+        <div class="faq-list">
+            <div class="faq-item">
+                <button class="faq-question">
+                    <span>Я никогда не занимался в спортзале. Подойдут ли мне тренировки в Bull Gym?</span>
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <p>Да! У нас занимаются люди разного уровня подготовки, от новичков до опытных спортсменов. Тренеры
+                        помогут вам освоиться, покажут, как пользоваться оборудованием, и подскажут, с чего начать,
+                        чтобы тренировки были безопасными и результативными.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question">
+                    <span>Обязательно ли покупать персональные тренировки?</span>
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <p>Нет, вы можете тренироваться самостоятельно. Но персональный тренинг — это быстрый и безопасный
+                        путь к цели. Тренер составит программу именно для вас, проконтролирует технику и поможет
+                        избежать ошибок, которые могут замедлить прогресс.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question">
+                    <span>Есть ли пробное занятие?</span>
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <p>Да! Вы можете прийти на пробную тренировку, чтобы оценить атмосферу, оборудование и работу
+                        тренеров. Это лучший способ понять, что Bull Gym — ваш клуб.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question">
+                    <span>Как быстро я увижу результат?</span>
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <p>Многое зависит от ваших целей, регулярности тренировок и питания. Наши тренеры дадут рекомендации
+                        именно для ваших целей и помогут составить план тренировок. Большинство наших клиентов отмечают
+                        первые изменения уже через 2–4 недели занятий.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question">
+                    <span>Есть ли у вас детские программы?</span>
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <p>Да! У нас есть детские тренировки, в том числе танцевальные, силовые и развивающие. Пока ребёнок
+                        на занятии, вы можете спокойно тренироваться сами.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question">
+                    <span>Можно ли заморозить абонемент?</span>
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <p>Да, мы понимаем, что бывают отпуска или непредвиденные ситуации. Абонемент можно заморозить на
+                        определённый срок, чтобы вы не потеряли оплаченные дни.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Футер -->
+<footer class="footer" id="footer-contacts">
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3 class="footer-title">Bull Gym</h3>
+                <p class="footer-text">Фитнес, в который возвращаются за результатом. Профессиональное оборудование,
+                    лучшие тренеры и атмосфера поддержки.</p>
+            </div>
+            <div class="footer-section">
+                <h4 class="footer-subtitle">Контакты</h4>
+                <div class="footer-contact">
+                    <p><strong>Телефон:</strong> <a href="tel:+79673000751">+7 (967) 300-07-51</a></p>
+                    <p><strong>Email:</strong> <a href="mailto:info@bull-gym.ru">info@bull-gym.ru</a></p>
+                    <p><strong>Адрес:</strong> Краснодар, Юбилейный мкр, ул. Рождественская набережная 31/2</p>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h4 class="footer-subtitle">Мы в соцсетях</h4>
+                <div class="footer-social">
+                    <a href="https://vk.com/bullgymkrd" class="social-link" target="_blank" rel="noopener noreferrer" aria-label="VKontakte">
+                        <img src="https://static.tildacdn.com/tild3837-3230-4965-b436-306530623130/Frame_77.png" alt="VK" width="32" height="32">
+                    </a>
+                    <a href="https://wa.me/79673000751" class="social-link" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
+                        <img src="https://static.tildacdn.com/tild3335-3833-4238-b730-326631313531/Frame_78.png" alt="WhatsApp" width="32" height="32">
+                    </a>
+                    <a href="https://t.me/bullgym_ru" class="social-link" target="_blank" rel="noopener noreferrer" aria-label="Telegram">
+                        <img src="https://static.tildacdn.com/tild6339-3630-4030-b134-623237663839/Frame_79.png" alt="Telegram" width="32" height="32">
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Bull Gym. Все права защищены.</p>
+        </div>
+    </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
