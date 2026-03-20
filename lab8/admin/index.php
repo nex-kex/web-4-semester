@@ -107,6 +107,43 @@ function truncateText($text, $length = 50) {
             padding-left: 15px;
         }
 
+        /* Специальный контейнер для статистики пользователей */
+        .users-stats {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .users-stats .stat-card {
+            flex: 0 1 auto;
+            min-width: 180px;
+        }
+
+        /* Общий стиль для всех статистик (оставляем как есть) */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .users-stats {
+                gap: 15px;
+            }
+
+            .users-stats .stat-card {
+                min-width: 140px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
