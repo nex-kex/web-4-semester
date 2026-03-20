@@ -50,7 +50,8 @@ function generateGymLogin($name) {
     return $transliterated . rand(100, 999);
 }
 
-function validateGymForm($data) {
+// Валидация для регистрации (без комментария)
+function validateRegistrationForm($data) {
     $errors = [];
 
     $name = trim($data['name'] ?? '');
@@ -80,8 +81,37 @@ function validateGymForm($data) {
         $errors['email'] = 'Email не может быть длиннее 100 символов';
     }
 
-    if (isset($data['comment']) && strlen($data['comment']) > 5000) {
-        $errors['comment'] = 'Комментарий слишком длинный';
+    return $errors;
+}
+
+// Валидация для обратной связи (с комментарием)
+function validateFeedbackForm($data) {
+    $errors = [];
+
+    $name = trim($data['name'] ?? '');
+    if (empty($name)) {
+        $errors['name'] = 'Укажите имя';
+    } elseif (strlen($name) > 100) {
+        $errors['name'] = 'Имя не может быть длиннее 100 символов';
+    }
+
+    $phone = trim($data['phone'] ?? '');
+    if (empty($phone)) {
+        $errors['phone'] = 'Укажите телефон';
+    } elseif (strlen($phone) > 20) {
+        $errors['phone'] = 'Телефон не может быть длиннее 20 символов';
+    }
+
+    $email = trim($data['email'] ?? '');
+    if (empty($email)) {
+        $errors['email'] = 'Укажите email';
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $errors['email'] = 'Введите корректный email';
+    }
+
+    $comment = trim($data['comment'] ?? '');
+    if (strlen($comment) > 5000) {
+        $errors['comment'] = 'Комментарий слишком длинный (максимум 5000 символов)';
     }
 
     return $errors;

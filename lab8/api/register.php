@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $input = file_get_contents('php://input');
 $data = json_decode($input, true) ?? [];
 
-$errors = validateGymForm($data);
+$errors = validateRegistrationForm($data);
 
 if (!empty($errors)) {
     http_response_code(400);
@@ -44,8 +44,8 @@ try {
     $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
     $stmt = $pdo->prepare("
-        INSERT INTO gym_applications (login, password_hash, name, phone, email, comment, status)
-        VALUES (?, ?, ?, ?, ?, ?, 'new')
+        INSERT INTO gym_applications (login, password_hash, name, phone, email, status)
+        VALUES (?, ?, ?, ?, ?, 'new')
     ");
 
     $stmt->execute([
@@ -53,8 +53,7 @@ try {
         $passwordHash,
         trim($data['name']),
         trim($data['phone']),
-        trim($data['email']),
-        trim($data['comment'] ?? '')
+        trim($data['email'])
     ]);
 
     $id = $pdo->lastInsertId();

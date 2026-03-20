@@ -161,78 +161,13 @@ document.addEventListener('click', (e) => {
     }
 });
 
-// FORM SUBMISSION
-const contactForm = document.getElementById('contactForm');
-const formMessage = document.getElementById('formMessage');
-const FORMCARRY_ENDPOINT = '/web4/lab8/api/feedback.php';
-
-contactForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const submitBtn = contactForm.querySelector('.submit-btn');
-    const formData = new FormData(contactForm);
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Отправка...';
-    formMessage.classList.remove('success', 'error');
-    formMessage.style.display = 'none';
-    try {
-        const response = await fetch(FORMCARRY_ENDPOINT, {
-            method: 'POST',
-            body: formData,
-            headers: { 'Accept': 'application/json' }
-        });
-        const data = await response.json();
-        if (response.ok) {
-            formMessage.textContent = 'Спасибо! Ваша заявка отправлена. Мы свяжемся с вами.';
-            formMessage.classList.add('success');
-            formMessage.style.display = 'block';
-            contactForm.reset();
-        } else {
-            throw new Error(data.message || 'Ошибка');
-        }
-    } catch (error) {
-        formMessage.textContent = 'Ошибка. Попробуйте позже или позвоните нам.';
-        formMessage.classList.add('error');
-        formMessage.style.display = 'block';
-    } finally {
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Отправить';
-    }
-});
-
-// SMOOTH SCROLL
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-        const href = this.getAttribute('href');
-        if (href !== '#' && href !== '' && href !== 'javascript:void(0)') {
-            const target = document.querySelector(href);
-            if (target) {
-                e.preventDefault();
-                const headerOffset = 80;
-                const elementPosition = target.getBoundingClientRect().top;
-                const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-                window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
-            }
-        }
-    });
-});
-
-// FAQ ACCORDION
-const faqItems = document.querySelectorAll('.faq-item');
-faqItems.forEach(item => {
-    item.querySelector('.faq-question').addEventListener('click', () => {
-        const isActive = item.classList.contains('active');
-        faqItems.forEach(otherItem => otherItem.classList.remove('active'));
-        if (!isActive) item.classList.add('active');
-    });
-});
-
-// FORM SUBMISSION with REST API
+// FORM SUBMISSION - отправка на свой API
 const contactForm = document.getElementById('contactForm');
 const formMessage = document.getElementById('formMessage');
 
 const supportsFetch = window.fetch && window.Promise && window.JSON;
 
-if (supportsFetch) {
+if (supportsFetch && contactForm) {
     contactForm.addEventListener('submit', handleFormSubmit);
 }
 
@@ -253,7 +188,7 @@ async function handleFormSubmit(e) {
     formMessage.style.display = 'none';
 
     try {
-        const response = await fetch('/lab8/api/users', {
+        const response = await fetch('/web4/lab8/api/feedback.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -265,21 +200,22 @@ async function handleFormSubmit(e) {
         const data = await response.json();
 
         if (response.ok && data.success) {
-            formMessage.innerHTML = `✅ Спасибо! Ваша заявка отправлена.<br>
-                <strong>Логин:</strong> ${data.data.login}<br>
-                <strong>Пароль:</strong> ${data.data.password}<br>
-                <small>Сохраните эти данные для возможности редактирования заявки</small>`;
+            formMessage.textContent = '✅ Спасибо! Ваша заявка отправлена. Мы свяжемся с вами.';
             formMessage.classList.add('success');
             formMessage.style.display = 'block';
             contactForm.reset();
-
-            localStorage.setItem('gym_user_id', data.data.id);
-            localStorage.setItem('gym_user_login', data.data.login);
         } else {
-            throw new Error(data.error || 'Ошибка сервера');
+            const errors = data.errors;
+            let errorText = '❌ Ошибка:\n';
+            for (let key in errors) {
+                errorText += `- ${errors[key]}\n`;
+            }
+            formMessage.textContent = errorText || 'Ошибка отправки';
+            formMessage.classList.add('error');
+            formMessage.style.display = 'block';
         }
     } catch (error) {
-        formMessage.textContent = '❌ Ошибка: ' + error.message;
+        formMessage.textContent = '❌ Ошибка соединения. Попробуйте позже.';
         formMessage.classList.add('error');
         formMessage.style.display = 'block';
     } finally {
@@ -288,13 +224,8 @@ async function handleFormSubmit(e) {
     }
 }
 
-// Fallback для браузеров без fetch
-if (!supportsFetch) {
-    const input = document.createElement('input');
-    input.type = 'hidden';
-    input.name = 'form_submit';
-    input.value = '1';
-    contactForm.appendChild(input);
-    contactForm.action = '/lab8/api/users';
+// Если fetch не поддерживается, форма отправится обычным POST
+if (!supportsFetch && contactForm) {
+    contactForm.action = '/web4/lab8/api/feedback.php';
     contactForm.method = 'POST';
-}
+}}

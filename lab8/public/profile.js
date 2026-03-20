@@ -5,7 +5,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const userLoginSpan = document.getElementById('userLogin');
     const loading = document.getElementById('loading');
 
-    // Загрузка данных пользователя
     async function loadProfile() {
         try {
             const response = await fetch('/web4/lab8/api/me.php');
@@ -16,12 +15,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                 document.getElementById('name').value = user.name;
                 document.getElementById('phone').value = user.phone;
                 document.getElementById('email').value = user.email;
-                document.getElementById('comment').value = user.comment || '';
                 userNameSpan.textContent = user.name;
                 userLoginSpan.textContent = user.login;
-                if (loading) loading.style.display = 'none';
+                loading.style.display = 'none';
+                profileForm.style.display = 'block';
             } else if (response.status === 401) {
-                // Не авторизован - перенаправляем на страницу входа
                 window.location.href = '/web4/lab8/public/login.html';
             } else {
                 window.location.href = '/web4/lab8/public/login.html';
@@ -31,7 +29,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // Сохранение изменений
     if (profileForm) {
         profileForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -39,8 +36,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const formData = {
                 name: document.getElementById('name').value,
                 phone: document.getElementById('phone').value,
-                email: document.getElementById('email').value,
-                comment: document.getElementById('comment').value
+                email: document.getElementById('email').value
             };
 
             message.className = 'message';

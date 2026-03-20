@@ -52,13 +52,21 @@
             color: #fff;
         }
 
-        .logout-btn {
+        .logout-btn, .home-btn {
             background: #b61815;
             color: white;
             padding: 8px 20px;
             border-radius: 8px;
             text-decoration: none;
             transition: all 0.3s;
+        }
+
+        .home-btn {
+            background: #28a745;
+        }
+
+        .home-btn:hover {
+            background: #218838;
         }
 
         .logout-btn:hover {
@@ -90,7 +98,7 @@
             font-weight: 500;
         }
 
-        input, textarea {
+        input {
             width: 100%;
             padding: 12px;
             background: #2a2a2a;
@@ -98,25 +106,11 @@
             border-radius: 8px;
             color: #fff;
             font-size: 16px;
-            font-family: 'Roboto', sans-serif;
         }
 
-        input:focus, textarea:focus {
+        input:focus {
             outline: none;
             border-color: #b61815;
-        }
-
-        textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
-
-        .readonly-field {
-            background: #2a2a2a;
-            padding: 12px;
-            border-radius: 8px;
-            color: #888;
-            border: 1px solid #3a3a3a;
         }
 
         button {
@@ -181,16 +175,52 @@
         .login-info strong {
             color: #b61815;
         }
+
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .back-link a {
+            color: #888;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .back-link a:hover {
+            color: #b61815;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: #888;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .button-group .home-btn {
+            flex: 1;
+            text-align: center;
+            background: #28a745;
+        }
+
+        .button-group .logout-btn {
+            flex: 1;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
-<div id="loading" style="text-align: center; padding: 50px; color: #888;">Загрузка данных...</div>
     <div class="container">
         <div class="header">
             <a href="index.html" class="logo">BULL GYM</a>
             <div class="user-info">
                 <span class="user-name" id="userName"></span>
-                <a href="/lab8/api/logout.php" class="logout-btn">Выйти</a>
             </div>
         </div>
 
@@ -202,7 +232,9 @@
                 <p class="info-text">⚠️ Логин и пароль нельзя изменить. Сохраните их в надежном месте.</p>
             </div>
 
-            <form id="profileForm">
+            <div id="loading" class="loading">Загрузка данных...</div>
+
+            <form id="profileForm" style="display: none;">
                 <div class="form-group">
                     <label>Имя *</label>
                     <input type="text" id="name" name="name" required>
@@ -218,19 +250,19 @@
                     <input type="email" id="email" name="email" required>
                 </div>
 
-                <div class="form-group">
-                    <label>Комментарий</label>
-                    <textarea id="comment" name="comment" placeholder="Ваши пожелания или вопросы"></textarea>
-                </div>
-
                 <button type="submit">💾 Сохранить изменения</button>
             </form>
 
-            <div class="back-link" style="margin-top: 20px; text-align: center;">
-                <a href="login.html" style="color: #888;">Войти под другим аккаунтом</a>
+            <div class="button-group">
+                <a href="index.html" class="home-btn">🏠 На главную</a>
+                <a href="/web4/lab8/api/logout.php" class="logout-btn">🚪 Выйти</a>
             </div>
 
             <div id="message" class="message"></div>
+
+            <div class="back-link">
+                <a href="login.html">Войти под другим аккаунтом</a>
+            </div>
         </div>
     </div>
 

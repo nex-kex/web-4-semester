@@ -11,20 +11,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 require_once __DIR__ . '/../includes/functions.php';
 
-// ВАЖНО: session_start() должна быть первой после header
 session_start();
 
-// Проверка авторизации
 if (!isset($_SESSION['gym_user_id']) || empty($_SESSION['gym_user_id'])) {
     http_response_code(401);
     echo json_encode(['error' => 'Unauthorized', 'redirect' => '/web4/lab8/public/register.html']);
     exit;
 }
 
-// Функция для получения текущего пользователя
 function getCurrentUser() {
     $pdo = getGymDBConnection();
-    $stmt = $pdo->prepare("SELECT id, login, name, phone, email, comment, status FROM gym_applications WHERE id = ?");
+    $stmt = $pdo->prepare("SELECT id, login, name, phone, email, status FROM gym_applications WHERE id = ?");
     $stmt->execute([$_SESSION['gym_user_id']]);
     return $stmt->fetch();
 }
@@ -46,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
     $input = file_get_contents('php://input');
     $data = json_decode($input, true) ?? [];
 
-    $errors = validateGymForm($data);
+    $errors = validateRegistrationForm($data);
 
     if (!empty($errors)) {
         http_response_code(400);
@@ -59,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
 
         $stmt = $pdo->prepare("
             UPDATE gym_applications
-            SET name = ?, phone = ?, email = ?, comment = ?, status = 'processed'
+            SET name = ?, phone = ?, email = ?, status = 'processed'
             WHERE id = ?
         ");
 
@@ -67,13 +64,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
             trim($data['name']),
             trim($data['phone']),
             trim($data['email']),
-            trim($data['comment'] ?? ''),
             $user['id']
         ]);
 
         $_SESSION['gym_user_name'] = trim($data['name']);
 
-        $stmt = $pdo->prepare("SELECT id, login, name, phone, email, comment, status FROM gym_applications WHERE id = ?");
+        $stmt = $pdo->prepare("SELECT id, login, name, phone, email, status FROM gym_applications WHERE id = ?");
         $stmt->execute([$user['id']]);
         $updatedUser = $stmt->fetch();
 
