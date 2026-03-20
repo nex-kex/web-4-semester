@@ -1,13 +1,14 @@
 <?php
 session_start();
-require_once __DIR__ . '/../includes/auth.php';
 
-if (!isAdminLoggedIn()) {
+// Подключаем functions.php (там есть getGymDBConnection)
+require_once __DIR__ . '/../includes/functions.php';
+
+// Проверка авторизации админа
+if (!isset($_SESSION['gym_admin_logged_in']) || $_SESSION['gym_admin_logged_in'] !== true) {
     header('Location: login.php');
     exit;
 }
-
-require_once __DIR__ . '/../includes/functions.php';
 
 $pdo = getGymDBConnection();
 $stmt = $pdo->query("SELECT id, login, name, phone, email, comment, status, created_at FROM gym_applications ORDER BY id DESC");

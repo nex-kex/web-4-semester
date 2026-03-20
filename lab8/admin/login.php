@@ -79,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php if ($error): ?>
             <div class="error"><?= $error ?></div>
         <?php endif; ?>
-        <form method="POST">
+        <form method="POST" action="/web4/lab8/admin/login.php">
             <input type="text" name="username" placeholder="Логин" required>
             <input type="password" name="password" placeholder="Пароль" required>
             <button type="submit">Войти</button>

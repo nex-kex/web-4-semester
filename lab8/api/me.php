@@ -13,7 +13,7 @@ require_once __DIR__ . '/../includes/auth.php';
 
 if (!isUserLoggedIn()) {
     http_response_code(401);
-    echo json_encode(['error' => 'Unauthorized']);
+    echo json_encode(['error' => 'Unauthorized', 'redirect' => '/web4/lab8/public/login.html']);
     exit;
 }
 

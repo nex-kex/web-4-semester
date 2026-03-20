@@ -30,7 +30,7 @@ if (empty($login) || empty($password)) {
 }
 
 if (authenticateUser($login, $password)) {
-    echo json_encode(['success' => true, 'redirect' => '/lab7/public/profile.html']);
+    echo json_encode(['success' => true, 'redirect' => '/web4/lab7/public/profile.html']);
 } else {
     http_response_code(401);
     echo json_encode(['error' => 'Неверный логин или пароль']);
