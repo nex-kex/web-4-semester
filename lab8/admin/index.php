@@ -39,6 +39,14 @@ $feedbackStats = $pdo->query("
 
 $message = $_GET['message'] ?? '';
 $error = $_GET['error'] ?? '';
+
+// Функция для обрезки текста (без mb_substr)
+function truncateText($text, $length = 50) {
+    if (strlen($text) <= $length) {
+        return $text;
+    }
+    return substr($text, 0, $length) . '...';
+}
 ?>
 <!DOCTYPE html>
 <html lang="ru">
@@ -225,7 +233,7 @@ $error = $_GET['error'] ?? '';
         }
 
         .comment-cell {
-            max-width: 300px;
+            max-width: 250px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -239,6 +247,10 @@ $error = $_GET['error'] ?? '';
             th, td {
                 font-size: 12px;
                 padding: 8px;
+            }
+
+            .comment-cell {
+                max-width: 150px;
             }
         }
     </style>
@@ -363,8 +375,7 @@ $error = $_GET['error'] ?? '';
                         <td><?= htmlspecialchars($fb['phone']) ?></td>
                         <td><?= htmlspecialchars($fb['email']) ?></td>
                         <td class="comment-cell" title="<?= htmlspecialchars($fb['comment']) ?>">
-                            <?= htmlspecialchars(mb_substr($fb['comment'], 0, 50)) ?>
-                            <?= strlen($fb['comment']) > 50 ? '...' : '' ?>
+                            <?= htmlspecialchars(truncateText($fb['comment'], 50)) ?>
                         </td>
                         <td>
                             <span class="status-<?= $fb['status'] ?>">
