@@ -164,7 +164,7 @@ document.addEventListener('click', (e) => {
 // FORM SUBMISSION
 const contactForm = document.getElementById('contactForm');
 const formMessage = document.getElementById('formMessage');
-const FORMCARRY_ENDPOINT = 'https://formcarry.com/s/GeLrFCro_b1';
+const FORMCARRY_ENDPOINT = '/web4/lab8/api/feedback.php';
 
 contactForm.addEventListener('submit', async (e) => {
     e.preventDefault();

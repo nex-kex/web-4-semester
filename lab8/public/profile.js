@@ -1,35 +1,43 @@
 document.addEventListener('DOMContentLoaded', async () => {
-    const profileForm = document.getElementById('profileForm');
-    const message = document.getElementById('message');
-    const userNameSpan = document.getElementById('userName');
-    const userLoginSpan = document.getElementById('userLogin');
-
-    // Загрузка данных пользователя
-    async function loadProfile() {
+    // Проверяем, есть ли сессия или сохраненные данные
+    const checkAuth = async () => {
         try {
             const response = await fetch('/web4/lab8/api/me.php');
-            const data = await response.json();
 
-            if (response.ok && data.success) {
-                const user = data.data;
-                document.getElementById('name').value = user.name;
-                document.getElementById('phone').value = user.phone;
-                document.getElementById('email').value = user.email;
-                document.getElementById('comment').value = user.comment || '';
-                userNameSpan.textContent = user.name;
-                userLoginSpan.textContent = user.login;
-            } else if (response.status === 401) {
+            if (response.status === 401) {
                 // Не авторизован - перенаправляем на страницу входа
                 window.location.href = '/web4/lab8/public/login.html';
+                return false;
+            }
+
+            const data = await response.json();
+            if (data.success) {
+                return data.data;
             } else {
                 window.location.href = '/web4/lab8/public/login.html';
+                return false;
             }
         } catch (error) {
             window.location.href = '/web4/lab8/public/login.html';
+            return false;
         }
-    }
+    };
 
-    // Сохранение изменений
+    const user = await checkAuth();
+    if (!user) return;
+
+    // Заполняем форму данными пользователя
+    document.getElementById('name').value = user.name;
+    document.getElementById('phone').value = user.phone;
+    document.getElementById('email').value = user.email;
+    document.getElementById('comment').value = user.comment || '';
+    document.getElementById('userName').textContent = user.name;
+    document.getElementById('userLogin').textContent = user.login;
+
+    // Обработка отправки формы
+    const profileForm = document.getElementById('profileForm');
+    const message = document.getElementById('message');
+
     profileForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
@@ -40,7 +48,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             comment: document.getElementById('comment').value
         };
 
-        message.className = 'message';
         message.style.display = 'none';
 
         try {
@@ -59,14 +66,16 @@ document.addEventListener('DOMContentLoaded', async () => {
                 message.textContent = '✅ Данные успешно обновлены!';
                 message.classList.add('success');
                 message.style.display = 'block';
-                userNameSpan.textContent = formData.name;
+                document.getElementById('userName').textContent = formData.name;
 
                 setTimeout(() => {
                     message.style.display = 'none';
                 }, 3000);
+            } else if (response.status === 401) {
+                window.location.href = '/web4/lab8/public/login.html';
             } else {
                 const errors = data.errors;
-                let errorText = '❌ Ошибка валидации:\n';
+                let errorText = '❌ Ошибка:\n';
                 for (let key in errors) {
                     errorText += `- ${errors[key]}\n`;
                 }
@@ -80,6 +89,4 @@ document.addEventListener('DOMContentLoaded', async () => {
             message.style.display = 'block';
         }
     });
-
-    loadProfile();
 });
