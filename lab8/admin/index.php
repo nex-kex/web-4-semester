@@ -283,10 +283,6 @@ function truncateText($text, $length = 50) {
                 <div class="stat-number"><?= $usersStats['edited'] ?></div>
                 <div class="stat-label">Редактировали</div>
             </div>
-            <div class="stat-card">
-                <div class="stat-number"><?= $feedbackStats['total'] ?></div>
-                <div class="stat-label">Всего заявок</div>
-            </div>
         </div>
 
         <!-- ТАБЛИЦА ЗАРЕГИСТРИРОВАННЫХ ПОЛЬЗОВАТЕЛЕЙ -->
