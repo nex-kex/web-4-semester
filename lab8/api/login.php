@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../includes/functions.php';
 
 $input = file_get_contents('php://input');
 $data = json_decode($input, true) ?? [];
@@ -29,10 +29,29 @@ if (empty($login) || empty($password)) {
     exit;
 }
 
-if (authenticateUser($login, $password)) {
-    echo json_encode(['success' => true, 'redirect' => '/web4/lab7/public/profile.html']);
-} else {
-    http_response_code(401);
-    echo json_encode(['error' => 'Неверный логин или пароль']);
+try {
+    $pdo = getGymDBConnection();
+    $stmt = $pdo->prepare("SELECT id, login, password_hash, name FROM gym_applications WHERE login = ?");
+    $stmt->execute([$login]);
+    $user = $stmt->fetch();
+
+    if ($user && password_verify($password, $user['password_hash'])) {
+        // Создаем сессию
+        session_start();
+        $_SESSION['gym_user_id'] = $user['id'];
+        $_SESSION['gym_user_login'] = $user['login'];
+        $_SESSION['gym_user_name'] = $user['name'];
+
+        echo json_encode([
+            'success' => true,
+            'redirect' => '/web4/lab8/public/profile.html'
+        ]);
+    } else {
+        http_response_code(401);
+        echo json_encode(['error' => 'Неверный логин или пароль']);
+    }
+} catch (PDOException $e) {
+    http_response_code(500);
+    echo json_encode(['error' => 'Ошибка базы данных']);
 }
 ?>

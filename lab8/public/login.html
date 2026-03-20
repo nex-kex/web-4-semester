@@ -61,7 +61,6 @@
             border-radius: 8px;
             color: #ffffff;
             font-size: 16px;
-            transition: all 0.3s;
         }
 
         input:focus {
@@ -81,6 +80,7 @@
             cursor: pointer;
             transition: all 0.3s;
             font-family: 'Oswald', sans-serif;
+            margin-top: 10px;
         }
 
         button:hover {
@@ -96,6 +96,7 @@
             margin-bottom: 20px;
             text-align: center;
             border: 1px solid #b61815;
+            display: none;
         }
 
         .register-link {
@@ -127,6 +128,13 @@
         .back-link a:hover {
             color: #b61815;
         }
+
+        .loading {
+            text-align: center;
+            color: #888;
+            margin-top: 20px;
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -134,24 +142,25 @@
         <div class="login-box">
             <h1>🔐 Вход в личный кабинет</h1>
 
-            <div id="errorMessage" class="error" style="display: none;"></div>
+            <div id="errorMessage" class="error"></div>
 
             <form id="loginForm">
                 <div class="form-group">
                     <label>Логин</label>
-                    <input type="text" id="login" name="login" required>
+                    <input type="text" id="login" name="login" required autofocus>
                 </div>
                 <div class="form-group">
                     <label>Пароль</label>
                     <input type="password" id="password" name="password" required>
                 </div>
-                <button type="submit">Войти</button>
+                <button type="submit" id="submitBtn">Войти</button>
             </form>
+
+            <div id="loading" class="loading">Проверяем учетные данные...</div>
 
             <div class="register-link">
                 Нет аккаунта? <a href="register.html">Зарегистрироваться</a>
             </div>
-
             <div class="back-link">
                 <a href="index.html">← На главную</a>
             </div>
@@ -161,14 +170,25 @@
     <script>
         const loginForm = document.getElementById('loginForm');
         const errorMessage = document.getElementById('errorMessage');
+        const submitBtn = document.getElementById('submitBtn');
+        const loading = document.getElementById('loading');
 
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            const login = document.getElementById('login').value;
+            const login = document.getElementById('login').value.trim();
             const password = document.getElementById('password').value;
 
+            if (!login || !password) {
+                errorMessage.textContent = 'Заполните все поля';
+                errorMessage.style.display = 'block';
+                return;
+            }
+
+            // Скрываем предыдущие ошибки
             errorMessage.style.display = 'none';
+            submitBtn.disabled = true;
+            loading.style.display = 'block';
 
             try {
                 const response = await fetch('/web4/lab8/api/login.php', {
@@ -183,7 +203,8 @@
                 const data = await response.json();
 
                 if (response.ok && data.success) {
-                    window.location.href = '/web4/lab8/public/profile.html';
+                    // Успешный вход - перенаправляем в личный кабинет
+                    window.location.href = data.redirect;
                 } else {
                     errorMessage.textContent = data.error || 'Неверный логин или пароль';
                     errorMessage.style.display = 'block';
@@ -191,6 +212,9 @@
             } catch (error) {
                 errorMessage.textContent = 'Ошибка соединения. Попробуйте позже.';
                 errorMessage.style.display = 'block';
+            } finally {
+                submitBtn.disabled = false;
+                loading.style.display = 'none';
             }
         });
     </script>

@@ -11,12 +11,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 require_once __DIR__ . '/../includes/functions.php';
 
-// Проверка авторизации
+// ВАЖНО: session_start() должна быть первой после header
 session_start();
+
+// Проверка авторизации
 if (!isset($_SESSION['gym_user_id']) || empty($_SESSION['gym_user_id'])) {
     http_response_code(401);
     echo json_encode(['error' => 'Unauthorized', 'redirect' => '/web4/lab8/public/register.html']);
     exit;
+}
+
+// Функция для получения текущего пользователя
+function getCurrentUser() {
+    $pdo = getGymDBConnection();
+    $stmt = $pdo->prepare("SELECT id, login, name, phone, email, comment, status FROM gym_applications WHERE id = ?");
+    $stmt->execute([$_SESSION['gym_user_id']]);
+    return $stmt->fetch();
 }
 
 $user = getCurrentUser();
