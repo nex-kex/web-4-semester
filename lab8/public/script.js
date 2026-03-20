@@ -161,13 +161,11 @@ document.addEventListener('click', (e) => {
     }
 });
 
-// FORM SUBMISSION - отправка на свой API
+// FORM SUBMISSION - отправка на API обратной связи
 const contactForm = document.getElementById('contactForm');
 const formMessage = document.getElementById('formMessage');
 
-const supportsFetch = window.fetch && window.Promise && window.JSON;
-
-if (supportsFetch && contactForm) {
+if (contactForm) {
     contactForm.addEventListener('submit', handleFormSubmit);
 }
 
@@ -177,14 +175,18 @@ async function handleFormSubmit(e) {
     const submitBtn = contactForm.querySelector('.submit-btn');
     const formData = new FormData(contactForm);
 
-    const jsonData = {};
-    formData.forEach((value, key) => {
-        jsonData[key] = value;
-    });
+    // Собираем данные
+    const jsonData = {
+        name: formData.get('name'),
+        phone: formData.get('phone'),
+        email: formData.get('email'),
+        comment: formData.get('comment') || ''
+    };
 
+    // Блокируем кнопку и показываем индикатор
     submitBtn.disabled = true;
     submitBtn.textContent = 'Отправка...';
-    formMessage.classList.remove('success', 'error');
+    formMessage.className = 'form-message';
     formMessage.style.display = 'none';
 
     try {
@@ -200,32 +202,35 @@ async function handleFormSubmit(e) {
         const data = await response.json();
 
         if (response.ok && data.success) {
-            formMessage.textContent = '✅ Спасибо! Ваша заявка отправлена. Мы свяжемся с вами.';
+            // Успех - показываем сообщение
+            formMessage.textContent = '✅ ' + data.message;
             formMessage.classList.add('success');
             formMessage.style.display = 'block';
             contactForm.reset();
+
+            // Скрываем сообщение через 5 секунд
+            setTimeout(() => {
+                formMessage.style.display = 'none';
+            }, 5000);
         } else {
+            // Ошибка валидации
             const errors = data.errors;
-            let errorText = '❌ Ошибка:\n';
+            let errorText = '❌ Пожалуйста, исправьте ошибки:\n';
             for (let key in errors) {
                 errorText += `- ${errors[key]}\n`;
             }
-            formMessage.textContent = errorText || 'Ошибка отправки';
+            formMessage.textContent = errorText;
             formMessage.classList.add('error');
             formMessage.style.display = 'block';
         }
     } catch (error) {
-        formMessage.textContent = '❌ Ошибка соединения. Попробуйте позже.';
+        console.error('Fetch error:', error);
+        formMessage.textContent = '❌ Ошибка соединения. Пожалуйста, попробуйте позже или позвоните нам.';
         formMessage.classList.add('error');
         formMessage.style.display = 'block';
     } finally {
+        // Разблокируем кнопку
         submitBtn.disabled = false;
         submitBtn.textContent = 'Отправить';
     }
 }
-
-// Если fetch не поддерживается, форма отправится обычным POST
-if (!supportsFetch && contactForm) {
-    contactForm.action = '/web4/lab8/api/feedback.php';
-    contactForm.method = 'POST';
-}}

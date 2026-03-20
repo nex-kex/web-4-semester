@@ -10,33 +10,32 @@ require_once __DIR__ . '/../includes/functions.php';
 
 $pdo = getGymDBConnection();
 
-// Исправленный запрос - удаляем comment, так как его нет в таблице gym_applications
-$stmt = $pdo->query("SELECT id, login, name, phone, email, status, created_at FROM gym_applications ORDER BY id DESC");
-$users = $stmt->fetchAll();
+// Пользователи (зарегистрированные)
+$usersStmt = $pdo->query("SELECT id, login, name, phone, email, status, created_at, updated_at FROM gym_applications ORDER BY id DESC");
+$users = $usersStmt->fetchAll();
 
 // Статистика по пользователям
-$stats = $pdo->query("
+$usersStats = $pdo->query("
     SELECT
         COUNT(*) as total,
         SUM(CASE WHEN status = 'new' THEN 1 ELSE 0 END) as new,
-        SUM(CASE WHEN status = 'processed' THEN 1 ELSE 0 END) as processed,
-        SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as completed
+        SUM(CASE WHEN status = 'edited' THEN 1 ELSE 0 END) as edited
     FROM gym_applications
 ")->fetch();
+
+// Обратная связь (заявки с главной)
+$feedbackStmt = $pdo->query("SELECT id, name, phone, email, comment, status, created_at FROM gym_feedback ORDER BY id DESC");
+$feedbacks = $feedbackStmt->fetchAll();
 
 // Статистика по обратной связи
 $feedbackStats = $pdo->query("
     SELECT
         COUNT(*) as total,
         SUM(CASE WHEN status = 'new' THEN 1 ELSE 0 END) as new,
-        SUM(CASE WHEN status = 'read' THEN 1 ELSE 0 END) as read_count,
-        SUM(CASE WHEN status = 'replied' THEN 1 ELSE 0 END) as replied
+        SUM(CASE WHEN status = 'processing' THEN 1 ELSE 0 END) as processing,
+        SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as completed
     FROM gym_feedback
 ")->fetch();
-
-// Получаем заявки из обратной связи
-$feedbackStmt = $pdo->query("SELECT id, name, phone, email, comment, status, created_at FROM gym_feedback ORDER BY id DESC LIMIT 20");
-$feedbacks = $feedbackStmt->fetchAll();
 
 $message = $_GET['message'] ?? '';
 $error = $_GET['error'] ?? '';
@@ -92,6 +91,14 @@ $error = $_GET['error'] ?? '';
             background: #8f1310;
         }
 
+        .section-title {
+            color: #b61815;
+            margin: 30px 0 20px 0;
+            font-family: 'Oswald', sans-serif;
+            border-left: 4px solid #b61815;
+            padding-left: 15px;
+        }
+
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -116,14 +123,6 @@ $error = $_GET['error'] ?? '';
         .stat-label {
             color: #888;
             margin-top: 5px;
-        }
-
-        .section-title {
-            color: #b61815;
-            margin: 30px 0 20px 0;
-            font-family: 'Oswald', sans-serif;
-            border-left: 4px solid #b61815;
-            padding-left: 15px;
         }
 
         .message {
@@ -175,7 +174,7 @@ $error = $_GET['error'] ?? '';
             display: inline-block;
         }
 
-        .status-processed {
+        .status-edited {
             background: #ffc107;
             color: #333;
             padding: 4px 8px;
@@ -184,16 +183,7 @@ $error = $_GET['error'] ?? '';
             display: inline-block;
         }
 
-        .status-completed {
-            background: #28a745;
-            color: white;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            display: inline-block;
-        }
-
-        .status-read {
+        .status-processing {
             background: #17a2b8;
             color: white;
             padding: 4px 8px;
@@ -202,7 +192,7 @@ $error = $_GET['error'] ?? '';
             display: inline-block;
         }
 
-        .status-replied {
+        .status-completed {
             background: #28a745;
             color: white;
             padding: 4px 8px;
@@ -267,30 +257,30 @@ $error = $_GET['error'] ?? '';
             <div class="error">❌ <?= htmlspecialchars($error) ?></div>
         <?php endif; ?>
 
-        <!-- Статистика пользователей -->
+        <!-- СТАТИСТИКА ПОЛЬЗОВАТЕЛЕЙ (зарегистрированные) -->
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-number"><?= $stats['total'] ?></div>
+                <div class="stat-number"><?= $usersStats['total'] ?></div>
                 <div class="stat-label">Всего пользователей</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number"><?= $stats['new'] ?></div>
+                <div class="stat-number"><?= $usersStats['new'] ?></div>
                 <div class="stat-label">Новые</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number"><?= $stats['processed'] ?></div>
-                <div class="stat-label">В обработке</div>
+                <div class="stat-number"><?= $usersStats['edited'] ?></div>
+                <div class="stat-label">Редактировали</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number"><?= $stats['completed'] ?></div>
-                <div class="stat-label">Завершено</div>
+                <div class="stat-number"><?= $feedbackStats['total'] ?></div>
+                <div class="stat-label">Всего заявок</div>
             </div>
         </div>
 
-        <!-- Таблица зарегистрированных пользователей -->
+        <!-- ТАБЛИЦА ЗАРЕГИСТРИРОВАННЫХ ПОЛЬЗОВАТЕЛЕЙ -->
         <h2 class="section-title">👥 Зарегистрированные пользователи (<?= count($users) ?>)</h2>
         <div style="overflow-x: auto;">
-            <table>
+             <table>
                 <thead>
                     <tr>
                         <th>ID</th>
@@ -300,6 +290,7 @@ $error = $_GET['error'] ?? '';
                         <th>Email</th>
                         <th>Статус</th>
                         <th>Дата регистрации</th>
+                        <th>Обновлен</th>
                         <th>Действия</th>
                     </tr>
                 </thead>
@@ -313,10 +304,11 @@ $error = $_GET['error'] ?? '';
                         <td><?= htmlspecialchars($user['email']) ?></td>
                         <td>
                             <span class="status-<?= $user['status'] ?>">
-                                <?= $user['status'] == 'new' ? 'Новый' : ($user['status'] == 'processed' ? 'В обработке' : 'Завершен') ?>
+                                <?= $user['status'] == 'new' ? 'Новый' : 'Редактирован' ?>
                             </span>
                         </td>
                         <td><?= date('d.m.Y H:i', strtotime($user['created_at'])) ?></td>
+                        <td><?= date('d.m.Y H:i', strtotime($user['updated_at'])) ?></td>
                         <td>
                             <a href="edit.php?id=<?= $user['id'] ?>&type=user" class="btn-edit">Ред.</a>
                             <a href="delete.php?id=<?= $user['id'] ?>&type=user" class="btn-delete" onclick="return confirm('Удалить пользователя?')">Уд.</a>
@@ -327,28 +319,28 @@ $error = $_GET['error'] ?? '';
             </table>
         </div>
 
-        <!-- Статистика обратной связи -->
-        <h2 class="section-title">📝 Обратная связь</h2>
+        <!-- СТАТИСТИКА ОБРАТНОЙ СВЯЗИ -->
+        <h2 class="section-title">📝 Обратная связь с сайта (<?= $feedbackStats['total'] ?>)</h2>
         <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-number"><?= $feedbackStats['total'] ?></div>
-                <div class="stat-label">Всего заявок</div>
-            </div>
             <div class="stat-card">
                 <div class="stat-number"><?= $feedbackStats['new'] ?></div>
                 <div class="stat-label">Новые</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number"><?= $feedbackStats['read_count'] ?></div>
-                <div class="stat-label">Прочитано</div>
+                <div class="stat-number"><?= $feedbackStats['processing'] ?></div>
+                <div class="stat-label">В обработке</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number"><?= $feedbackStats['replied'] ?></div>
-                <div class="stat-label">Отвечено</div>
+                <div class="stat-number"><?= $feedbackStats['completed'] ?></div>
+                <div class="stat-label">Завершено</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number"><?= $feedbackStats['total'] ?></div>
+                <div class="stat-label">Всего заявок</div>
             </div>
         </div>
 
-        <!-- Таблица обратной связи -->
+        <!-- ТАБЛИЦА ОБРАТНОЙ СВЯЗИ -->
         <div style="overflow-x: auto;">
             <table>
                 <thead>
@@ -376,7 +368,7 @@ $error = $_GET['error'] ?? '';
                         </td>
                         <td>
                             <span class="status-<?= $fb['status'] ?>">
-                                <?= $fb['status'] == 'new' ? 'Новый' : ($fb['status'] == 'read' ? 'Прочитан' : 'Отвечен') ?>
+                                <?= $fb['status'] == 'new' ? 'Новый' : ($fb['status'] == 'processing' ? 'В обработке' : 'Завершен') ?>
                             </span>
                         </td>
                         <td><?= date('d.m.Y H:i', strtotime($fb['created_at'])) ?></td>

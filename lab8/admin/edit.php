@@ -24,12 +24,21 @@ if ($type === 'user') {
     $item = $stmt->fetch();
     $title = 'Редактирование пользователя';
     $backUrl = 'index.php';
+    $statusOptions = [
+        'new' => 'Новый',
+        'edited' => 'Редактирован'
+    ];
 } else {
     $stmt = $pdo->prepare("SELECT * FROM gym_feedback WHERE id = ?");
     $stmt->execute([$id]);
     $item = $stmt->fetch();
     $title = 'Редактирование заявки';
-    $backUrl = 'index.php#feedback';
+    $backUrl = 'index.php';
+    $statusOptions = [
+        'new' => 'Новый',
+        'processing' => 'В обработке',
+        'completed' => 'Завершен'
+    ];
 }
 
 if (!$item) {
@@ -41,61 +50,51 @@ $error = '';
 $success = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $name = trim($_POST['name'] ?? '');
+    $phone = trim($_POST['phone'] ?? '');
+    $email = trim($_POST['email'] ?? '');
+    $status = $_POST['status'] ?? 'new';
+
     if ($type === 'user') {
-        $name = trim($_POST['name'] ?? '');
-        $phone = trim($_POST['phone'] ?? '');
-        $email = trim($_POST['email'] ?? '');
-        $status = $_POST['status'] ?? 'new';
-
         $errors = validateRegistrationForm(['name' => $name, 'phone' => $phone, 'email' => $email]);
+    } else {
+        $comment = trim($_POST['comment'] ?? '');
+        $errors = validateFeedbackForm(['name' => $name, 'phone' => $phone, 'email' => $email, 'comment' => $comment]);
+    }
 
-        if (empty($errors)) {
-            try {
+    if (empty($errors)) {
+        try {
+            if ($type === 'user') {
                 $stmt = $pdo->prepare("
                     UPDATE gym_applications
                     SET name = ?, phone = ?, email = ?, status = ?
                     WHERE id = ?
                 ");
                 $stmt->execute([$name, $phone, $email, $status, $id]);
-                $success = 'Данные пользователя обновлены';
-
-                $stmt = $pdo->prepare("SELECT * FROM gym_applications WHERE id = ?");
-                $stmt->execute([$id]);
-                $item = $stmt->fetch();
-            } catch (PDOException $e) {
-                $error = 'Ошибка базы данных';
-            }
-        } else {
-            $error = implode(', ', $errors);
-        }
-    } else {
-        $name = trim($_POST['name'] ?? '');
-        $phone = trim($_POST['phone'] ?? '');
-        $email = trim($_POST['email'] ?? '');
-        $comment = trim($_POST['comment'] ?? '');
-        $status = $_POST['status'] ?? 'new';
-
-        $errors = validateFeedbackForm(['name' => $name, 'phone' => $phone, 'email' => $email, 'comment' => $comment]);
-
-        if (empty($errors)) {
-            try {
+            } else {
+                $comment = trim($_POST['comment'] ?? '');
                 $stmt = $pdo->prepare("
                     UPDATE gym_feedback
                     SET name = ?, phone = ?, email = ?, comment = ?, status = ?
                     WHERE id = ?
                 ");
                 $stmt->execute([$name, $phone, $email, $comment, $status, $id]);
-                $success = 'Данные заявки обновлены';
-
-                $stmt = $pdo->prepare("SELECT * FROM gym_feedback WHERE id = ?");
-                $stmt->execute([$id]);
-                $item = $stmt->fetch();
-            } catch (PDOException $e) {
-                $error = 'Ошибка базы данных';
             }
-        } else {
-            $error = implode(', ', $errors);
+            $success = 'Данные успешно обновлены';
+
+            // Обновляем данные
+            if ($type === 'user') {
+                $stmt = $pdo->prepare("SELECT * FROM gym_applications WHERE id = ?");
+            } else {
+                $stmt = $pdo->prepare("SELECT * FROM gym_feedback WHERE id = ?");
+            }
+            $stmt->execute([$id]);
+            $item = $stmt->fetch();
+        } catch (PDOException $e) {
+            $error = 'Ошибка базы данных';
         }
+    } else {
+        $error = implode(', ', $errors);
     }
 }
 ?>
@@ -227,10 +226,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="info-box">
                 <?php if ($type === 'user'): ?>
                     <p><strong>Логин:</strong> <?= htmlspecialchars($item['login']) ?></p>
-                    <p><strong>Создана:</strong> <?= date('d.m.Y H:i', strtotime($item['created_at'])) ?></p>
-                    <p><strong>Обновлена:</strong> <?= date('d.m.Y H:i', strtotime($item['updated_at'])) ?></p>
+                    <p><strong>Создан:</strong> <?= date('d.m.Y H:i', strtotime($item['created_at'])) ?></p>
+                    <p><strong>Обновлен:</strong> <?= date('d.m.Y H:i', strtotime($item['updated_at'])) ?></p>
                 <?php else: ?>
-                    <p><strong>Создана:</strong> <?= date('d.m.Y H:i', strtotime($item['created_at'])) ?></p>
+                    <p><strong>Создан:</strong> <?= date('d.m.Y H:i', strtotime($item['created_at'])) ?></p>
                 <?php endif; ?>
             </div>
 
@@ -258,15 +257,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="form-group">
                     <label>Статус</label>
                     <select name="status">
-                        <?php if ($type === 'user'): ?>
-                            <option value="new" <?= $item['status'] == 'new' ? 'selected' : '' ?>>Новый</option>
-                            <option value="processed" <?= $item['status'] == 'processed' ? 'selected' : '' ?>>В обработке</option>
-                            <option value="completed" <?= $item['status'] == 'completed' ? 'selected' : '' ?>>Завершен</option>
-                        <?php else: ?>
-                            <option value="new" <?= $item['status'] == 'new' ? 'selected' : '' ?>>Новый</option>
-                            <option value="read" <?= $item['status'] == 'read' ? 'selected' : '' ?>>Прочитан</option>
-                            <option value="replied" <?= $item['status'] == 'replied' ? 'selected' : '' ?>>Отвечен</option>
-                        <?php endif; ?>
+                        <?php foreach ($statusOptions as $key => $value): ?>
+                            <option value="<?= $key ?>" <?= $item['status'] == $key ? 'selected' : '' ?>>
+                                <?= $value ?>
+                            </option>
+                        <?php endforeach; ?>
                     </select>
                 </div>
 

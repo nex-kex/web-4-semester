@@ -17,38 +17,75 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
+// Получаем данные
 $input = file_get_contents('php://input');
-$data = json_decode($input, true) ?? [];
+$data = [];
 
-if (empty($data) && !empty($_POST)) {
+if (!empty($input) && strpos($_SERVER['CONTENT_TYPE'] ?? '', 'application/json') !== false) {
+    $data = json_decode($input, true) ?? [];
+} else {
     $data = $_POST;
 }
 
-$errors = validateFeedbackForm($data);
+// Валидация
+$errors = [];
+$name = trim($data['name'] ?? '');
+$phone = trim($data['phone'] ?? '');
+$email = trim($data['email'] ?? '');
+$comment = trim($data['comment'] ?? '');
+
+if (empty($name)) {
+    $errors['name'] = 'Укажите имя';
+} elseif (strlen($name) > 100) {
+    $errors['name'] = 'Имя не может быть длиннее 100 символов';
+}
+
+if (empty($phone)) {
+    $errors['phone'] = 'Укажите телефон';
+} elseif (strlen($phone) > 20) {
+    $errors['phone'] = 'Телефон не может быть длиннее 20 символов';
+}
+
+if (empty($email)) {
+    $errors['email'] = 'Укажите email';
+} elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    $errors['email'] = 'Введите корректный email';
+} elseif (strlen($email) > 100) {
+    $errors['email'] = 'Email не может быть длиннее 100 символов';
+}
+
+if (strlen($comment) > 5000) {
+    $errors['comment'] = 'Комментарий слишком длинный';
+}
 
 if (!empty($errors)) {
     http_response_code(400);
-    echo json_encode(['success' => false, 'error' => 'Validation failed', 'errors' => $errors]);
+    echo json_encode([
+        'success' => false,
+        'error' => 'Validation failed',
+        'errors' => $errors
+    ]);
     exit;
 }
 
 try {
     $pdo = getGymDBConnection();
 
+    // Сохраняем в таблицу gym_feedback
     $stmt = $pdo->prepare("
         INSERT INTO gym_feedback (name, phone, email, comment, status)
         VALUES (?, ?, ?, ?, 'new')
     ");
 
-    $stmt->execute([
-        trim($data['name']),
-        trim($data['phone']),
-        trim($data['email']),
-        trim($data['comment'] ?? '')
-    ]);
+    $result = $stmt->execute([$name, $phone, $email, $comment]);
+
+    if (!$result) {
+        throw new Exception('Ошибка при сохранении');
+    }
 
     $feedbackId = $pdo->lastInsertId();
 
+    // Отправляем успешный ответ
     http_response_code(200);
     echo json_encode([
         'success' => true,
@@ -57,7 +94,18 @@ try {
     ]);
 
 } catch (PDOException $e) {
+    error_log("Feedback DB error: " . $e->getMessage());
     http_response_code(500);
-    echo json_encode(['success' => false, 'error' => 'Ошибка базы данных']);
+    echo json_encode([
+        'success' => false,
+        'error' => 'Ошибка базы данных. Пожалуйста, попробуйте позже.'
+    ]);
+} catch (Exception $e) {
+    error_log("Feedback error: " . $e->getMessage());
+    http_response_code(500);
+    echo json_encode([
+        'success' => false,
+        'error' => 'Произошла ошибка. Пожалуйста, попробуйте позже.'
+    ]);
 }
 ?>
