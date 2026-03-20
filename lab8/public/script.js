@@ -164,7 +164,7 @@ document.addEventListener('click', (e) => {
 // FORM SUBMISSION
 const contactForm = document.getElementById('contactForm');
 const formMessage = document.getElementById('formMessage');
-const FORMCARRY_ENDPOINT = 'https://formcarry.com/s/3LxadD70sBB'; // замените при необходимости
+const FORMCARRY_ENDPOINT = 'https://formcarry.com/s/GeLrFCro_b1';
 
 contactForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -225,3 +225,76 @@ faqItems.forEach(item => {
         if (!isActive) item.classList.add('active');
     });
 });
+
+// FORM SUBMISSION with REST API
+const contactForm = document.getElementById('contactForm');
+const formMessage = document.getElementById('formMessage');
+
+const supportsFetch = window.fetch && window.Promise && window.JSON;
+
+if (supportsFetch) {
+    contactForm.addEventListener('submit', handleFormSubmit);
+}
+
+async function handleFormSubmit(e) {
+    e.preventDefault();
+
+    const submitBtn = contactForm.querySelector('.submit-btn');
+    const formData = new FormData(contactForm);
+
+    const jsonData = {};
+    formData.forEach((value, key) => {
+        jsonData[key] = value;
+    });
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Отправка...';
+    formMessage.classList.remove('success', 'error');
+    formMessage.style.display = 'none';
+
+    try {
+        const response = await fetch('/lab7/api/users', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(jsonData)
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+            formMessage.innerHTML = `✅ Спасибо! Ваша заявка отправлена.<br>
+                <strong>Логин:</strong> ${data.data.login}<br>
+                <strong>Пароль:</strong> ${data.data.password}<br>
+                <small>Сохраните эти данные для возможности редактирования заявки</small>`;
+            formMessage.classList.add('success');
+            formMessage.style.display = 'block';
+            contactForm.reset();
+
+            localStorage.setItem('gym_user_id', data.data.id);
+            localStorage.setItem('gym_user_login', data.data.login);
+        } else {
+            throw new Error(data.error || 'Ошибка сервера');
+        }
+    } catch (error) {
+        formMessage.textContent = '❌ Ошибка: ' + error.message;
+        formMessage.classList.add('error');
+        formMessage.style.display = 'block';
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Отправить';
+    }
+}
+
+// Fallback для браузеров без fetch
+if (!supportsFetch) {
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'form_submit';
+    input.value = '1';
+    contactForm.appendChild(input);
+    contactForm.action = '/lab7/api/users';
+    contactForm.method = 'POST';
+}
