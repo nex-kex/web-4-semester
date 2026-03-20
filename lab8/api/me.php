@@ -9,11 +9,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../includes/functions.php';
 
-if (!isUserLoggedIn()) {
+// Проверка авторизации
+session_start();
+if (!isset($_SESSION['gym_user_id']) || empty($_SESSION['gym_user_id'])) {
     http_response_code(401);
-    echo json_encode(['error' => 'Unauthorized', 'redirect' => '/web4/lab8/public/login.html']);
+    echo json_encode(['error' => 'Unauthorized', 'redirect' => '/web4/lab8/public/register.html']);
     exit;
 }
 

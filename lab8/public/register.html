@@ -116,6 +116,33 @@
             display: block;
         }
 
+        .credentials {
+            background: #2a2a2a;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+            border: 1px solid #b61815;
+        }
+
+        .credentials p {
+            color: #fff;
+            margin: 10px 0;
+        }
+
+        .credentials strong {
+            color: #b61815;
+        }
+
+        .credentials .note {
+            font-size: 12px;
+            color: #888;
+            margin-top: 15px;
+            text-align: center;
+            border-top: 1px solid #3a3a3a;
+            padding-top: 10px;
+        }
+
         .login-link {
             text-align: center;
             margin-top: 20px;
@@ -146,21 +173,13 @@
             color: #b61815;
         }
 
-        .credentials {
-            background: #2a2a2a;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 20px;
-            display: none;
+        .manual-login-btn {
+            background: #28a745;
+            margin-top: 15px;
         }
 
-        .credentials p {
-            color: #fff;
-            margin: 8px 0;
-        }
-
-        .credentials strong {
-            color: #b61815;
+        .manual-login-btn:hover {
+            background: #218838;
         }
     </style>
 </head>
@@ -173,7 +192,6 @@
             </p>
 
             <div id="message" class="message"></div>
-            <div id="credentials" class="credentials"></div>
 
             <form id="registerForm">
                 <div class="form-group">
@@ -194,6 +212,8 @@
                 </div>
                 <button type="submit">Зарегистрироваться</button>
             </form>
+
+            <div id="credentials" class="credentials"></div>
 
             <div class="login-link">
                 Уже есть аккаунт? <a href="login.html">Войти</a>
@@ -236,24 +256,27 @@
                 const data = await response.json();
 
                 if (response.ok && data.success) {
-                    // Показываем логин и пароль
+                    // Скрываем форму
+                    registerForm.style.display = 'none';
+
+                    // Показываем логин и пароль под формой
                     credentialsDiv.innerHTML = `
                         <p><strong>✅ Регистрация успешна!</strong></p>
                         <p><strong>Логин:</strong> ${data.data.login}</p>
                         <p><strong>Пароль:</strong> ${data.data.password}</p>
-                        <p style="font-size: 12px; margin-top: 10px;">Сохраните эти данные для входа в личный кабинет</p>
+                        <p style="margin-top: 10px;">Сохраните эти данные для входа в личный кабинет.</p>
+                        <div class="note">⚠️ Логин и пароль нельзя восстановить. Сохраните их сейчас!</div>
+                        <button type="button" class="manual-login-btn" onclick="window.location.href='/web4/lab8/public/login.html'">Перейти ко входу →</button>
                     `;
                     credentialsDiv.style.display = 'block';
 
-                    message.textContent = 'Регистрация успешна! Данные для входа выше.';
+                    message.textContent = 'Регистрация успешна! Данные для входа указаны ниже.';
                     message.classList.add('success');
                     message.style.display = 'block';
+
+                    // Очищаем форму
                     registerForm.reset();
 
-                    // Через 5 секунд перенаправляем на страницу входа
-                    setTimeout(() => {
-                        window.location.href = '/web4/lab8/public/login.html';
-                    }, 5000);
                 } else {
                     const errors = data.errors;
                     let errorText = '❌ Ошибка регистрации:\n';
