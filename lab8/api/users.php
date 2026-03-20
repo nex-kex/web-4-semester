@@ -77,7 +77,7 @@ try {
             'id' => $id,
             'login' => $login,
             'password' => $password,
-            'profile_url' => "/lab7/api/users/{$id}"
+            'profile_url' => "/lab8/api/users/{$id}"
         ]
     ]);
 

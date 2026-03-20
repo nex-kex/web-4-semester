@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Загрузка данных пользователя
     async function loadProfile() {
         try {
-            const response = await fetch('/lab7/api/me.php');
+            const response = await fetch('/lab8/api/me.php');
             const data = await response.json();
 
             if (response.ok && data.success) {
@@ -19,10 +19,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                 userNameSpan.textContent = user.name;
                 userLoginSpan.textContent = user.login;
             } else {
-                window.location.href = '/lab7/public/login.html';
+                window.location.href = '/lab8/public/login.html';
             }
         } catch (error) {
-            window.location.href = '/lab7/public/login.html';
+            window.location.href = '/lab8/public/login.html';
         }
     }
 
@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         message.style.display = 'none';
 
         try {
-            const response = await fetch('/lab7/api/me.php', {
+            const response = await fetch('/lab8/api/me.php', {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

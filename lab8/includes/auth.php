@@ -46,14 +46,14 @@ function isAdminLoggedIn() {
 
 function requireAuth() {
     if (!isUserLoggedIn()) {
-        header('Location: /lab7/public/login.html');
+        header('Location: /lab8/public/login.html');
         exit;
     }
 }
 
 function requireAdminAuth() {
     if (!isAdminLoggedIn()) {
-        header('Location: /lab7/admin/login.php');
+        header('Location: /lab8/admin/login.php');
         exit;
     }
 }

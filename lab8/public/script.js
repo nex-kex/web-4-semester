@@ -253,7 +253,7 @@ async function handleFormSubmit(e) {
     formMessage.style.display = 'none';
 
     try {
-        const response = await fetch('/lab7/api/users', {
+        const response = await fetch('/lab8/api/users', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -295,6 +295,6 @@ if (!supportsFetch) {
     input.name = 'form_submit';
     input.value = '1';
     contactForm.appendChild(input);
-    contactForm.action = '/lab7/api/users';
+    contactForm.action = '/lab8/api/users';
     contactForm.method = 'POST';
 }

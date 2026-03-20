@@ -170,7 +170,7 @@
             errorMessage.style.display = 'none';
 
             try {
-                const response = await fetch('/lab7/api/login.php', {
+                const response = await fetch('/lab8/api/login.php', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -182,7 +182,7 @@
                 const data = await response.json();
 
                 if (response.ok && data.success) {
-                    window.location.href = '/lab7/public/profile.html';
+                    window.location.href = '/lab8/public/profile.html';
                 } else {
                     errorMessage.textContent = data.error || 'Неверный логин или пароль';
                     errorMessage.style.display = 'block';
