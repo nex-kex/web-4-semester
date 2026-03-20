@@ -107,50 +107,23 @@ function truncateText($text, $length = 50) {
             padding-left: 15px;
         }
 
-        /* Специальный контейнер для статистики пользователей */
         .users-stats {
-            display: flex;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(200px, 300px));
             justify-content: center;
             gap: 20px;
             margin-bottom: 30px;
-            flex-wrap: wrap;
         }
 
-        .users-stats .stat-card {
-            flex: 0 1 auto;
-            min-width: 180px;
-        }
-
-        /* Общий стиль для всех статистик (оставляем как есть) */
-        .stats-grid {
+        .feedback-stats {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(4, minmax(180px, 250px));
+            justify-content: center;
             gap: 20px;
             margin-bottom: 30px;
         }
 
-        /* Адаптивность */
-        @media (max-width: 768px) {
-            .users-stats {
-                gap: 15px;
-            }
-
-            .users-stats .stat-card {
-                min-width: 140px;
-            }
-
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
+        /* Общий стиль карточки */
         .stat-card {
             background: #1a1a1a;
             padding: 20px;
@@ -276,7 +249,34 @@ function truncateText($text, $length = 50) {
             text-overflow: ellipsis;
         }
 
+        /* Адаптивность */
+        @media (max-width: 992px) {
+            .users-stats {
+                grid-template-columns: repeat(3, 1fr);
+                max-width: 800px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .feedback-stats {
+                grid-template-columns: repeat(2, 1fr);
+                max-width: 600px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+        }
+
         @media (max-width: 768px) {
+            .users-stats {
+                grid-template-columns: 1fr;
+                max-width: 300px;
+            }
+
+            .feedback-stats {
+                grid-template-columns: 1fr;
+                max-width: 300px;
+            }
+
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
@@ -307,7 +307,7 @@ function truncateText($text, $length = 50) {
         <?php endif; ?>
 
         <!-- СТАТИСТИКА ПОЛЬЗОВАТЕЛЕЙ (зарегистрированные) -->
-        <div class="stats-grid">
+        <div class="users-stats">
             <div class="stat-card">
                 <div class="stat-number"><?= $usersStats['total'] ?></div>
                 <div class="stat-label">Всего пользователей</div>
@@ -366,7 +366,7 @@ function truncateText($text, $length = 50) {
 
         <!-- СТАТИСТИКА ОБРАТНОЙ СВЯЗИ -->
         <h2 class="section-title">📝 Обратная связь с сайта (<?= $feedbackStats['total'] ?>)</h2>
-        <div class="stats-grid">
+        <div class="feedback-stats">
             <div class="stat-card">
                 <div class="stat-number"><?= $feedbackStats['new'] ?></div>
                 <div class="stat-label">Новые</div>
