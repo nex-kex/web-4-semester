@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Личный кабинет - Bull Gym</title>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: #1a1a1a;
+            padding: 20px 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #b61815;
+        }
+
+        .logo {
+            font-family: 'Oswald', sans-serif;
+            font-size: 24px;
+            color: #b61815;
+            text-decoration: none;
+        }
+
+        .user-info {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .user-name {
+            color: #fff;
+        }
+
+        .logout-btn {
+            background: #b61815;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: #8f1310;
+        }
+
+        .profile-card {
+            background: #1a1a1a;
+            padding: 40px;
+            border-radius: 15px;
+            border: 1px solid #3a3a3a;
+        }
+
+        h1 {
+            font-family: 'Oswald', sans-serif;
+            color: #b61815;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            color: #fff;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            background: #2a2a2a;
+            border: 1px solid #3a3a3a;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 16px;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #b61815;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .readonly-field {
+            background: #2a2a2a;
+            padding: 12px;
+            border-radius: 8px;
+            color: #888;
+            border: 1px solid #3a3a3a;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #b61815;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Oswald', sans-serif;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background: #8f1310;
+        }
+
+        .message {
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            display: none;
+        }
+
+        .message.success {
+            background: rgba(40, 167, 69, 0.2);
+            color: #28a745;
+            border: 1px solid #28a745;
+            display: block;
+        }
+
+        .message.error {
+            background: rgba(182, 24, 21, 0.2);
+            color: #b61815;
+            border: 1px solid #b61815;
+            display: block;
+        }
+
+        .info-text {
+            color: #888;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .login-info {
+            background: rgba(182, 24, 21, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .login-info p {
+            color: #fff;
+            margin: 5px 0;
+        }
+
+        .login-info strong {
+            color: #b61815;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="index.html" class="logo">BULL GYM</a>
+            <div class="user-info">
+                <span class="user-name" id="userName"></span>
+                <a href="/lab7/api/logout.php" class="logout-btn">Выйти</a>
+            </div>
+        </div>
+
+        <div class="profile-card">
+            <h1>👤 Личный кабинет</h1>
+
+            <div class="login-info">
+                <p><strong>Ваш логин:</strong> <span id="userLogin"></span></p>
+                <p class="info-text">⚠️ Логин и пароль нельзя изменить. Сохраните их в надежном месте.</p>
+            </div>
+
+            <form id="profileForm">
+                <div class="form-group">
+                    <label>Имя *</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Телефон *</label>
+                    <input type="tel" id="phone" name="phone" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Email *</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Комментарий</label>
+                    <textarea id="comment" name="comment" placeholder="Ваши пожелания или вопросы"></textarea>
+                </div>
+
+                <button type="submit">💾 Сохранить изменения</button>
+            </form>
+
+            <div id="message" class="message"></div>
+        </div>
+    </div>
+
+    <script src="profile.js"></script>
+</body>
+</html>

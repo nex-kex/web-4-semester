@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход в личный кабинет - Bull Gym</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .login-box {
+            background: #1a1a1a;
+            padding: 40px;
+            border-radius: 15px;
+            border: 2px solid #b61815;
+            box-shadow: 0 20px 60px rgba(182, 24, 21, 0.2);
+        }
+
+        h1 {
+            font-family: 'Oswald', sans-serif;
+            color: #b61815;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            color: #ffffff;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            background: #2a2a2a;
+            border: 1px solid #3a3a3a;
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #b61815;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #b61815;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Oswald', sans-serif;
+        }
+
+        button:hover {
+            background: #8f1310;
+            transform: translateY(-2px);
+        }
+
+        .error {
+            background: rgba(182, 24, 21, 0.2);
+            color: #b61815;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            border: 1px solid #b61815;
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 20px;
+            color: #888;
+        }
+
+        .register-link a {
+            color: #b61815;
+            text-decoration: none;
+        }
+
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .back-link a {
+            color: #888;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .back-link a:hover {
+            color: #b61815;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-box">
+            <h1>🔐 Вход в личный кабинет</h1>
+
+            <div id="errorMessage" class="error" style="display: none;"></div>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>Логин</label>
+                    <input type="text" id="login" name="login" required>
+                </div>
+                <div class="form-group">
+                    <label>Пароль</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit">Войти</button>
+            </form>
+
+            <div class="register-link">
+                Нет аккаунта? <a href="index.html">Заполните анкету на главной странице</a>
+            </div>
+            <div class="back-link">
+                <a href="index.html">← На главную</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const loginForm = document.getElementById('loginForm');
+        const errorMessage = document.getElementById('errorMessage');
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const login = document.getElementById('login').value;
+            const password = document.getElementById('password').value;
+
+            errorMessage.style.display = 'none';
+
+            try {
+                const response = await fetch('/lab7/api/login.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ login, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    window.location.href = '/lab7/public/profile.html';
+                } else {
+                    errorMessage.textContent = data.error || 'Неверный логин или пароль';
+                    errorMessage.style.display = 'block';
+                }
+            } catch (error) {
+                errorMessage.textContent = 'Ошибка соединения. Попробуйте позже.';
+                errorMessage.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
