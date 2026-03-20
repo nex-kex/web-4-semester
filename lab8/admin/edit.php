@@ -55,16 +55,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email'] ?? '');
     $status = $_POST['status'] ?? 'new';
 
-    if ($type === 'user') {
-        $errors = validateRegistrationForm(['name' => $name, 'phone' => $phone, 'email' => $email]);
-    } else {
-        $comment = trim($_POST['comment'] ?? '');
-        $errors = validateFeedbackForm(['name' => $name, 'phone' => $phone, 'email' => $email, 'comment' => $comment]);
+    // Валидация
+    $errors = [];
+
+    if (empty($name)) {
+        $errors[] = 'Укажите имя';
+    } elseif (strlen($name) > 100) {
+        $errors[] = 'Имя не может быть длиннее 100 символов';
+    }
+
+    if (empty($phone)) {
+        $errors[] = 'Укажите телефон';
+    } elseif (strlen($phone) > 20) {
+        $errors[] = 'Телефон не может быть длиннее 20 символов';
+    }
+
+    if (empty($email)) {
+        $errors[] = 'Укажите email';
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $errors[] = 'Введите корректный email';
     }
 
     if (empty($errors)) {
         try {
             if ($type === 'user') {
+                // Обновляем пользователя - статус может быть new или edited
                 $stmt = $pdo->prepare("
                     UPDATE gym_applications
                     SET name = ?, phone = ?, email = ?, status = ?
@@ -82,7 +97,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             $success = 'Данные успешно обновлены';
 
-            // Обновляем данные
+            // Обновляем данные для отображения
             if ($type === 'user') {
                 $stmt = $pdo->prepare("SELECT * FROM gym_applications WHERE id = ?");
             } else {
@@ -91,7 +106,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->execute([$id]);
             $item = $stmt->fetch();
         } catch (PDOException $e) {
-            $error = 'Ошибка базы данных';
+            $error = 'Ошибка базы данных: ' . $e->getMessage();
         }
     } else {
         $error = implode(', ', $errors);
@@ -226,9 +241,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="info-box">
                 <?php if ($type === 'user'): ?>
                     <p><strong>Логин:</strong> <?= htmlspecialchars($item['login']) ?></p>
+                    <p><strong>Текущий статус:</strong>
+                        <span class="status-<?= $item['status'] ?>">
+                            <?= $item['status'] == 'new' ? 'Новый' : 'Редактирован' ?>
+                        </span>
+                    </p>
                     <p><strong>Создан:</strong> <?= date('d.m.Y H:i', strtotime($item['created_at'])) ?></p>
                     <p><strong>Обновлен:</strong> <?= date('d.m.Y H:i', strtotime($item['updated_at'])) ?></p>
                 <?php else: ?>
+                    <p><strong>Текущий статус:</strong>
+                        <span class="status-<?= $item['status'] ?>">
+                            <?= $item['status'] == 'new' ? 'Новый' : ($item['status'] == 'processing' ? 'В обработке' : 'Завершен') ?>
+                        </span>
+                    </p>
                     <p><strong>Создан:</strong> <?= date('d.m.Y H:i', strtotime($item['created_at'])) ?></p>
                 <?php endif; ?>
             </div>

@@ -16,6 +16,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                 document.getElementById('phone').value = user.phone;
                 document.getElementById('email').value = user.email;
                 userNameSpan.textContent = user.name;
+
+                const userStatusSpan = document.getElementById('userStatus');
+                if (userStatusSpan) {
+                    userStatusSpan.textContent = user.status === 'new' ? 'Новый' : 'Редактирован';
+                    userStatusSpan.className = `status-badge status-${user.status}`;
+                }
+
                 userLoginSpan.textContent = user.login;
                 loading.style.display = 'none';
                 profileForm.style.display = 'block';
@@ -25,6 +32,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 window.location.href = '/web4/lab8/public/login.html';
             }
         } catch (error) {
+            console.error('Load profile error:', error);
             window.location.href = '/web4/lab8/public/login.html';
         }
     }
@@ -41,6 +49,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             message.className = 'message';
             message.style.display = 'none';
+
+            const submitBtn = profileForm.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Сохранение...';
 
             try {
                 const response = await fetch('/web4/lab8/api/me.php', {
@@ -76,9 +89,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                     message.style.display = 'block';
                 }
             } catch (error) {
+                console.error('Update error:', error);
                 message.textContent = '❌ Ошибка соединения. Попробуйте позже.';
                 message.classList.add('error');
                 message.style.display = 'block';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
             }
         });
     }

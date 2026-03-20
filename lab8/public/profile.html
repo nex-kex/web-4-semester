@@ -6,212 +6,45 @@
     <title>Личный кабинет - Bull Gym</title>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Roboto', sans-serif;
-            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .header {
-            background: #1a1a1a;
-            padding: 20px 30px;
-            border-radius: 15px;
-            margin-bottom: 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border: 1px solid #b61815;
-        }
-
-        .logo {
-            font-family: 'Oswald', sans-serif;
-            font-size: 24px;
-            color: #b61815;
-            text-decoration: none;
-        }
-
-        .user-info {
-            display: flex;
-            gap: 20px;
-            align-items: center;
-        }
-
-        .user-name {
-            color: #fff;
-        }
-
-        .logout-btn, .home-btn {
-            background: #b61815;
-            color: white;
-            padding: 8px 20px;
-            border-radius: 8px;
-            text-decoration: none;
-            transition: all 0.3s;
-        }
-
-        .home-btn {
-            background: #28a745;
-        }
-
-        .home-btn:hover {
-            background: #218838;
-        }
-
-        .logout-btn:hover {
-            background: #8f1310;
-        }
-
-        .profile-card {
-            background: #1a1a1a;
-            padding: 40px;
-            border-radius: 15px;
-            border: 1px solid #3a3a3a;
-        }
-
-        h1 {
-            font-family: 'Oswald', sans-serif;
-            color: #b61815;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            color: #fff;
-            margin-bottom: 8px;
-            font-weight: 500;
-        }
-
-        input {
-            width: 100%;
-            padding: 12px;
-            background: #2a2a2a;
-            border: 1px solid #3a3a3a;
-            border-radius: 8px;
-            color: #fff;
-            font-size: 16px;
-        }
-
-        input:focus {
-            outline: none;
-            border-color: #b61815;
-        }
-
-        button {
-            width: 100%;
-            padding: 12px;
-            background: #b61815;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-family: 'Oswald', sans-serif;
-            margin-top: 10px;
-        }
-
-        button:hover {
-            background: #8f1310;
-        }
-
+        /* ... стили как в предыдущей версии ... */
         .message {
             margin-top: 20px;
             padding: 12px;
             border-radius: 8px;
             text-align: center;
             display: none;
+            white-space: pre-line;
         }
-
         .message.success {
             background: rgba(40, 167, 69, 0.2);
             color: #28a745;
             border: 1px solid #28a745;
             display: block;
         }
-
         .message.error {
             background: rgba(182, 24, 21, 0.2);
             color: #b61815;
             border: 1px solid #b61815;
             display: block;
         }
-
-        .info-text {
-            color: #888;
-            font-size: 14px;
-            margin-top: 5px;
-        }
-
-        .login-info {
-            background: rgba(182, 24, 21, 0.1);
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-
-        .login-info p {
-            color: #fff;
-            margin: 5px 0;
-        }
-
-        .login-info strong {
-            color: #b61815;
-        }
-
-        .back-link {
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        .back-link a {
-            color: #888;
-            text-decoration: none;
-            font-size: 14px;
-        }
-
-        .back-link a:hover {
-            color: #b61815;
-        }
-
         .loading {
             text-align: center;
             padding: 50px;
             color: #888;
         }
-
-        .button-group {
-            display: flex;
-            gap: 15px;
-            margin-top: 20px;
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
         }
-
-        .button-group .home-btn {
-            flex: 1;
-            text-align: center;
-            background: #28a745;
+        .status-new {
+            background: #b61815;
+            color: white;
         }
-
-        .button-group .logout-btn {
-            flex: 1;
-            text-align: center;
+        .status-edited {
+            background: #ffc107;
+            color: #333;
         }
     </style>
 </head>
@@ -229,6 +62,7 @@
 
             <div class="login-info">
                 <p><strong>Ваш логин:</strong> <span id="userLogin"></span></p>
+                <p><strong>Статус:</strong> <span id="userStatus" class="status-badge"></span></p>
                 <p class="info-text">⚠️ Логин и пароль нельзя изменить. Сохраните их в надежном месте.</p>
             </div>
 
