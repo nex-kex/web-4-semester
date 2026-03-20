@@ -1,19 +1,20 @@
 <?php
 session_start();
 
-// Подключаем functions.php (там есть getGymDBConnection)
-require_once __DIR__ . '/../includes/functions.php';
-
-// Проверка авторизации админа
 if (!isset($_SESSION['gym_admin_logged_in']) || $_SESSION['gym_admin_logged_in'] !== true) {
     header('Location: login.php');
     exit;
 }
 
+require_once __DIR__ . '/../includes/functions.php';
+
 $pdo = getGymDBConnection();
-$stmt = $pdo->query("SELECT id, login, name, phone, email, comment, status, created_at FROM gym_applications ORDER BY id DESC");
+
+// Исправленный запрос - удаляем comment, так как его нет в таблице gym_applications
+$stmt = $pdo->query("SELECT id, login, name, phone, email, status, created_at FROM gym_applications ORDER BY id DESC");
 $users = $stmt->fetchAll();
 
+// Статистика по пользователям
 $stats = $pdo->query("
     SELECT
         COUNT(*) as total,
@@ -22,6 +23,20 @@ $stats = $pdo->query("
         SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as completed
     FROM gym_applications
 ")->fetch();
+
+// Статистика по обратной связи
+$feedbackStats = $pdo->query("
+    SELECT
+        COUNT(*) as total,
+        SUM(CASE WHEN status = 'new' THEN 1 ELSE 0 END) as new,
+        SUM(CASE WHEN status = 'read' THEN 1 ELSE 0 END) as read_count,
+        SUM(CASE WHEN status = 'replied' THEN 1 ELSE 0 END) as replied
+    FROM gym_feedback
+")->fetch();
+
+// Получаем заявки из обратной связи
+$feedbackStmt = $pdo->query("SELECT id, name, phone, email, comment, status, created_at FROM gym_feedback ORDER BY id DESC LIMIT 20");
+$feedbacks = $feedbackStmt->fetchAll();
 
 $message = $_GET['message'] ?? '';
 $error = $_GET['error'] ?? '';
@@ -32,35 +47,216 @@ $error = $_GET['error'] ?? '';
     <meta charset="UTF-8">
     <title>Админ-панель - Bull Gym</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Roboto', sans-serif; background: #0a0a0a; padding: 20px; }
-        .container { max-width: 1400px; margin: 0 auto; }
-        .header { background: #1a1a1a; padding: 20px; border-radius: 10px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #b61815; }
-        .header h1 { color: #b61815; }
-        .logout-btn { background: #b61815; color: white; padding: 8px 20px; text-decoration: none; border-radius: 5px; }
-        .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 30px; }
-        .stat-card { background: #1a1a1a; padding: 20px; border-radius: 10px; text-align: center; border: 1px solid #3a3a3a; }
-        .stat-number { font-size: 32px; font-weight: bold; color: #b61815; }
-        .stat-label { color: #888; margin-top: 5px; }
-        .message { background: #28a745; color: white; padding: 12px; border-radius: 8px; margin-bottom: 20px; }
-        .error { background: #b61815; color: white; padding: 12px; border-radius: 8px; margin-bottom: 20px; }
-        table { width: 100%; background: #1a1a1a; border-radius: 10px; overflow: hidden; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #3a3a3a; color: #fff; }
-        th { background: #2a2a2a; color: #b61815; }
-        tr:hover { background: #2a2a2a; }
-        .status-new { background: #b61815; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; display: inline-block; }
-        .status-processed { background: #ffc107; color: #333; padding: 4px 8px; border-radius: 4px; font-size: 12px; display: inline-block; }
-        .status-completed { background: #28a745; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; display: inline-block; }
-        .btn-edit, .btn-delete { padding: 4px 12px; border-radius: 4px; text-decoration: none; font-size: 12px; margin: 0 2px; display: inline-block; }
-        .btn-edit { background: #ffc107; color: #333; }
-        .btn-delete { background: #b61815; color: white; }
-        .btn-edit:hover, .btn-delete:hover { opacity: 0.8; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #0a0a0a;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: #1a1a1a;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #b61815;
+        }
+
+        .header h1 {
+            color: #b61815;
+            font-family: 'Oswald', sans-serif;
+        }
+
+        .logout-btn {
+            background: #b61815;
+            color: white;
+            padding: 8px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .logout-btn:hover {
+            background: #8f1310;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: #1a1a1a;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid #3a3a3a;
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: bold;
+            color: #b61815;
+        }
+
+        .stat-label {
+            color: #888;
+            margin-top: 5px;
+        }
+
+        .section-title {
+            color: #b61815;
+            margin: 30px 0 20px 0;
+            font-family: 'Oswald', sans-serif;
+            border-left: 4px solid #b61815;
+            padding-left: 15px;
+        }
+
+        .message {
+            background: #28a745;
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .error {
+            background: #b61815;
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            background: #1a1a1a;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #3a3a3a;
+            color: #fff;
+        }
+
+        th {
+            background: #2a2a2a;
+            color: #b61815;
+        }
+
+        tr:hover {
+            background: #2a2a2a;
+        }
+
+        .status-new {
+            background: #b61815;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            display: inline-block;
+        }
+
+        .status-processed {
+            background: #ffc107;
+            color: #333;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            display: inline-block;
+        }
+
+        .status-completed {
+            background: #28a745;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            display: inline-block;
+        }
+
+        .status-read {
+            background: #17a2b8;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            display: inline-block;
+        }
+
+        .status-replied {
+            background: #28a745;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            display: inline-block;
+        }
+
+        .btn-edit, .btn-delete {
+            padding: 4px 12px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 12px;
+            margin: 0 2px;
+            display: inline-block;
+        }
+
+        .btn-edit {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .btn-delete {
+            background: #b61815;
+            color: white;
+        }
+
+        .btn-edit:hover, .btn-delete:hover {
+            opacity: 0.8;
+        }
+
+        .comment-cell {
+            max-width: 300px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            th, td {
+                font-size: 12px;
+                padding: 8px;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>🐂 Bull Gym - Админ-панель</h1>
+            <h1>🐂 Bull Gym - Панель управления</h1>
             <a href="logout.php" class="logout-btn">Выйти</a>
         </div>
 
@@ -71,10 +267,11 @@ $error = $_GET['error'] ?? '';
             <div class="error">❌ <?= htmlspecialchars($error) ?></div>
         <?php endif; ?>
 
-        <div class="stats">
+        <!-- Статистика пользователей -->
+        <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-number"><?= $stats['total'] ?></div>
-                <div class="stat-label">Всего заявок</div>
+                <div class="stat-label">Всего пользователей</div>
             </div>
             <div class="stat-card">
                 <div class="stat-number"><?= $stats['new'] ?></div>
@@ -90,7 +287,8 @@ $error = $_GET['error'] ?? '';
             </div>
         </div>
 
-        <h2 style="color: #fff; margin-bottom: 20px;">Все заявки</h2>
+        <!-- Таблица зарегистрированных пользователей -->
+        <h2 class="section-title">👥 Зарегистрированные пользователи (<?= count($users) ?>)</h2>
         <div style="overflow-x: auto;">
             <table>
                 <thead>
@@ -101,7 +299,7 @@ $error = $_GET['error'] ?? '';
                         <th>Телефон</th>
                         <th>Email</th>
                         <th>Статус</th>
-                        <th>Дата</th>
+                        <th>Дата регистрации</th>
                         <th>Действия</th>
                     </tr>
                 </thead>
@@ -120,8 +318,71 @@ $error = $_GET['error'] ?? '';
                         </td>
                         <td><?= date('d.m.Y H:i', strtotime($user['created_at'])) ?></td>
                         <td>
-                            <a href="edit.php?id=<?= $user['id'] ?>" class="btn-edit">Ред.</a>
-                            <a href="delete.php?id=<?= $user['id'] ?>" class="btn-delete" onclick="return confirm('Удалить заявку?')">Уд.</a>
+                            <a href="edit.php?id=<?= $user['id'] ?>&type=user" class="btn-edit">Ред.</a>
+                            <a href="delete.php?id=<?= $user['id'] ?>&type=user" class="btn-delete" onclick="return confirm('Удалить пользователя?')">Уд.</a>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Статистика обратной связи -->
+        <h2 class="section-title">📝 Обратная связь</h2>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number"><?= $feedbackStats['total'] ?></div>
+                <div class="stat-label">Всего заявок</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number"><?= $feedbackStats['new'] ?></div>
+                <div class="stat-label">Новые</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number"><?= $feedbackStats['read_count'] ?></div>
+                <div class="stat-label">Прочитано</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number"><?= $feedbackStats['replied'] ?></div>
+                <div class="stat-label">Отвечено</div>
+            </div>
+        </div>
+
+        <!-- Таблица обратной связи -->
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Имя</th>
+                        <th>Телефон</th>
+                        <th>Email</th>
+                        <th>Комментарий</th>
+                        <th>Статус</th>
+                        <th>Дата</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($feedbacks as $fb): ?>
+                    <tr>
+                        <td>#<?= $fb['id'] ?></td>
+                        <td><?= htmlspecialchars($fb['name']) ?></td>
+                        <td><?= htmlspecialchars($fb['phone']) ?></td>
+                        <td><?= htmlspecialchars($fb['email']) ?></td>
+                        <td class="comment-cell" title="<?= htmlspecialchars($fb['comment']) ?>">
+                            <?= htmlspecialchars(mb_substr($fb['comment'], 0, 50)) ?>
+                            <?= strlen($fb['comment']) > 50 ? '...' : '' ?>
+                        </td>
+                        <td>
+                            <span class="status-<?= $fb['status'] ?>">
+                                <?= $fb['status'] == 'new' ? 'Новый' : ($fb['status'] == 'read' ? 'Прочитан' : 'Отвечен') ?>
+                            </span>
+                        </td>
+                        <td><?= date('d.m.Y H:i', strtotime($fb['created_at'])) ?></td>
+                        <td>
+                            <a href="edit.php?id=<?= $fb['id'] ?>&type=feedback" class="btn-edit">Ред.</a>
+                            <a href="delete.php?id=<?= $fb['id'] ?>&type=feedback" class="btn-delete" onclick="return confirm('Удалить заявку?')">Уд.</a>
                         </td>
                     </tr>
                     <?php endforeach; ?>

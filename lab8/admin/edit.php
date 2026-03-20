@@ -1,8 +1,7 @@
 <?php
 session_start();
-require_once __DIR__ . '/../includes/auth.php';
 
-if (!isAdminLoggedIn()) {
+if (!isset($_SESSION['gym_admin_logged_in']) || $_SESSION['gym_admin_logged_in'] !== true) {
     header('Location: login.php');
     exit;
 }
@@ -10,6 +9,7 @@ if (!isAdminLoggedIn()) {
 require_once __DIR__ . '/../includes/functions.php';
 
 $id = $_GET['id'] ?? 0;
+$type = $_GET['type'] ?? 'user';
 
 if (!$id) {
     header('Location: index.php?error=' . urlencode('Не указан ID'));
@@ -17,12 +17,23 @@ if (!$id) {
 }
 
 $pdo = getGymDBConnection();
-$stmt = $pdo->prepare("SELECT * FROM gym_applications WHERE id = ?");
-$stmt->execute([$id]);
-$user = $stmt->fetch();
 
-if (!$user) {
-    header('Location: index.php?error=' . urlencode('Пользователь не найден'));
+if ($type === 'user') {
+    $stmt = $pdo->prepare("SELECT * FROM gym_applications WHERE id = ?");
+    $stmt->execute([$id]);
+    $item = $stmt->fetch();
+    $title = 'Редактирование пользователя';
+    $backUrl = 'index.php';
+} else {
+    $stmt = $pdo->prepare("SELECT * FROM gym_feedback WHERE id = ?");
+    $stmt->execute([$id]);
+    $item = $stmt->fetch();
+    $title = 'Редактирование заявки';
+    $backUrl = 'index.php#feedback';
+}
+
+if (!$item) {
+    header('Location: index.php?error=' . urlencode('Запись не найдена'));
     exit;
 }
 
@@ -30,33 +41,61 @@ $error = '';
 $success = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $name = trim($_POST['name'] ?? '');
-    $phone = trim($_POST['phone'] ?? '');
-    $email = trim($_POST['email'] ?? '');
-    $comment = trim($_POST['comment'] ?? '');
-    $status = $_POST['status'] ?? 'new';
+    if ($type === 'user') {
+        $name = trim($_POST['name'] ?? '');
+        $phone = trim($_POST['phone'] ?? '');
+        $email = trim($_POST['email'] ?? '');
+        $status = $_POST['status'] ?? 'new';
 
-    $errors = validateGymForm(['name' => $name, 'phone' => $phone, 'email' => $email, 'comment' => $comment]);
+        $errors = validateRegistrationForm(['name' => $name, 'phone' => $phone, 'email' => $email]);
 
-    if (empty($errors)) {
-        try {
-            $stmt = $pdo->prepare("
-                UPDATE gym_applications
-                SET name = ?, phone = ?, email = ?, comment = ?, status = ?
-                WHERE id = ?
-            ");
-            $stmt->execute([$name, $phone, $email, $comment, $status, $id]);
-            $success = 'Данные успешно обновлены';
+        if (empty($errors)) {
+            try {
+                $stmt = $pdo->prepare("
+                    UPDATE gym_applications
+                    SET name = ?, phone = ?, email = ?, status = ?
+                    WHERE id = ?
+                ");
+                $stmt->execute([$name, $phone, $email, $status, $id]);
+                $success = 'Данные пользователя обновлены';
 
-            // Обновляем данные пользователя
-            $stmt = $pdo->prepare("SELECT * FROM gym_applications WHERE id = ?");
-            $stmt->execute([$id]);
-            $user = $stmt->fetch();
-        } catch (PDOException $e) {
-            $error = 'Ошибка базы данных';
+                $stmt = $pdo->prepare("SELECT * FROM gym_applications WHERE id = ?");
+                $stmt->execute([$id]);
+                $item = $stmt->fetch();
+            } catch (PDOException $e) {
+                $error = 'Ошибка базы данных';
+            }
+        } else {
+            $error = implode(', ', $errors);
         }
     } else {
-        $error = implode(', ', $errors);
+        $name = trim($_POST['name'] ?? '');
+        $phone = trim($_POST['phone'] ?? '');
+        $email = trim($_POST['email'] ?? '');
+        $comment = trim($_POST['comment'] ?? '');
+        $status = $_POST['status'] ?? 'new';
+
+        $errors = validateFeedbackForm(['name' => $name, 'phone' => $phone, 'email' => $email, 'comment' => $comment]);
+
+        if (empty($errors)) {
+            try {
+                $stmt = $pdo->prepare("
+                    UPDATE gym_feedback
+                    SET name = ?, phone = ?, email = ?, comment = ?, status = ?
+                    WHERE id = ?
+                ");
+                $stmt->execute([$name, $phone, $email, $comment, $status, $id]);
+                $success = 'Данные заявки обновлены';
+
+                $stmt = $pdo->prepare("SELECT * FROM gym_feedback WHERE id = ?");
+                $stmt->execute([$id]);
+                $item = $stmt->fetch();
+            } catch (PDOException $e) {
+                $error = 'Ошибка базы данных';
+            }
+        } else {
+            $error = implode(', ', $errors);
+        }
     }
 }
 ?>
@@ -64,35 +103,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Редактирование заявки</title>
+    <title><?= $title ?> - Bull Gym</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: 'Roboto', sans-serif;
             background: #0a0a0a;
             padding: 20px;
         }
+
         .container {
             max-width: 600px;
             margin: 0 auto;
         }
+
         .card {
             background: #1a1a1a;
             padding: 30px;
             border-radius: 15px;
             border: 1px solid #b61815;
         }
+
         h1 {
             color: #b61815;
             margin-bottom: 30px;
+            font-family: 'Oswald', sans-serif;
         }
+
         .form-group {
             margin-bottom: 20px;
         }
+
         label {
             display: block;
             color: #fff;
             margin-bottom: 8px;
         }
+
         input, select, textarea {
             width: 100%;
             padding: 10px;
@@ -100,7 +152,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             border: 1px solid #3a3a3a;
             border-radius: 5px;
             color: #fff;
+            font-family: inherit;
         }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
         button {
             background: #b61815;
             color: white;
@@ -110,6 +169,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             cursor: pointer;
             margin-right: 10px;
         }
+
         .back-btn {
             background: #666;
             text-decoration: none;
@@ -118,6 +178,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             color: white;
             display: inline-block;
         }
+
         .success {
             background: #28a745;
             color: white;
@@ -125,6 +186,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             border-radius: 5px;
             margin-bottom: 20px;
         }
+
         .error {
             background: #b61815;
             color: white;
@@ -132,17 +194,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             border-radius: 5px;
             margin-bottom: 20px;
         }
-        .login-info {
+
+        .info-box {
             background: #2a2a2a;
             padding: 15px;
             border-radius: 5px;
             margin-bottom: 20px;
         }
-        .login-info p {
+
+        .info-box p {
             color: #fff;
             margin: 5px 0;
         }
-        .login-info strong {
+
+        .info-box strong {
             color: #b61815;
         }
     </style>
@@ -150,7 +215,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
     <div class="container">
         <div class="card">
-            <h1>✏️ Редактирование заявки #<?= $user['id'] ?></h1>
+            <h1>✏️ <?= $title ?> #<?= $id ?></h1>
 
             <?php if ($success): ?>
                 <div class="success">✅ <?= $success ?></div>
@@ -159,40 +224,55 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="error">❌ <?= $error ?></div>
             <?php endif; ?>
 
-            <div class="login-info">
-                <p><strong>Логин:</strong> <?= htmlspecialchars($user['login']) ?></p>
-                <p><strong>Создана:</strong> <?= date('d.m.Y H:i', strtotime($user['created_at'])) ?></p>
-                <p><strong>Обновлена:</strong> <?= date('d.m.Y H:i', strtotime($user['updated_at'])) ?></p>
+            <div class="info-box">
+                <?php if ($type === 'user'): ?>
+                    <p><strong>Логин:</strong> <?= htmlspecialchars($item['login']) ?></p>
+                    <p><strong>Создана:</strong> <?= date('d.m.Y H:i', strtotime($item['created_at'])) ?></p>
+                    <p><strong>Обновлена:</strong> <?= date('d.m.Y H:i', strtotime($item['updated_at'])) ?></p>
+                <?php else: ?>
+                    <p><strong>Создана:</strong> <?= date('d.m.Y H:i', strtotime($item['created_at'])) ?></p>
+                <?php endif; ?>
             </div>
 
             <form method="POST">
                 <div class="form-group">
                     <label>Имя</label>
-                    <input type="text" name="name" value="<?= htmlspecialchars($user['name']) ?>" required>
+                    <input type="text" name="name" value="<?= htmlspecialchars($item['name']) ?>" required>
                 </div>
                 <div class="form-group">
                     <label>Телефон</label>
-                    <input type="tel" name="phone" value="<?= htmlspecialchars($user['phone']) ?>" required>
+                    <input type="tel" name="phone" value="<?= htmlspecialchars($item['phone']) ?>" required>
                 </div>
                 <div class="form-group">
                     <label>Email</label>
-                    <input type="email" name="email" value="<?= htmlspecialchars($user['email']) ?>" required>
+                    <input type="email" name="email" value="<?= htmlspecialchars($item['email']) ?>" required>
                 </div>
+
+                <?php if ($type === 'feedback'): ?>
                 <div class="form-group">
                     <label>Комментарий</label>
-                    <textarea name="comment" rows="5"><?= htmlspecialchars($user['comment']) ?></textarea>
+                    <textarea name="comment" rows="5"><?= htmlspecialchars($item['comment']) ?></textarea>
                 </div>
+                <?php endif; ?>
+
                 <div class="form-group">
                     <label>Статус</label>
                     <select name="status">
-                        <option value="new" <?= $user['status'] == 'new' ? 'selected' : '' ?>>Новый</option>
-                        <option value="processed" <?= $user['status'] == 'processed' ? 'selected' : '' ?>>В обработке</option>
-                        <option value="completed" <?= $user['status'] == 'completed' ? 'selected' : '' ?>>Завершен</option>
+                        <?php if ($type === 'user'): ?>
+                            <option value="new" <?= $item['status'] == 'new' ? 'selected' : '' ?>>Новый</option>
+                            <option value="processed" <?= $item['status'] == 'processed' ? 'selected' : '' ?>>В обработке</option>
+                            <option value="completed" <?= $item['status'] == 'completed' ? 'selected' : '' ?>>Завершен</option>
+                        <?php else: ?>
+                            <option value="new" <?= $item['status'] == 'new' ? 'selected' : '' ?>>Новый</option>
+                            <option value="read" <?= $item['status'] == 'read' ? 'selected' : '' ?>>Прочитан</option>
+                            <option value="replied" <?= $item['status'] == 'replied' ? 'selected' : '' ?>>Отвечен</option>
+                        <?php endif; ?>
                     </select>
                 </div>
+
                 <div style="margin-top: 20px;">
                     <button type="submit">💾 Сохранить</button>
-                    <a href="index.php" class="back-btn">← Назад</a>
+                    <a href="<?= $backUrl ?>" class="back-btn">← Назад</a>
                 </div>
             </form>
         </div>
