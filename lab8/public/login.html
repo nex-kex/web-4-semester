@@ -152,9 +152,6 @@
                 Нет аккаунта? <a href="register.html">Зарегистрироваться</a>
             </div>
 
-            <div class="register-link">
-                Нет аккаунта? <a href="index.html">Заполните анкету на главной странице</a>
-            </div>
             <div class="back-link">
                 <a href="index.html">← На главную</a>
             </div>
@@ -186,7 +183,7 @@
                 const data = await response.json();
 
                 if (response.ok && data.success) {
-                    window.location.href = '/lab8/public/profile.html';
+                    window.location.href = '/web4/lab8/public/profile.html';
                 } else {
                     errorMessage.textContent = data.error || 'Неверный логин или пароль';
                     errorMessage.style.display = 'block';
