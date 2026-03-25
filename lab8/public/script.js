@@ -234,3 +234,24 @@ async function handleFormSubmit(e) {
         submitBtn.textContent = 'Отправить';
     }
 }
+
+// FAQ ACCORDION
+const faqItems = document.querySelectorAll('.faq-item');
+
+if (faqItems.length > 0) {
+    faqItems.forEach(item => {
+        const question = item.querySelector('.faq-question');
+        if (question) {
+            question.addEventListener('click', () => {
+                // Закрываем все остальные
+                faqItems.forEach(otherItem => {
+                    if (otherItem !== item && otherItem.classList.contains('active')) {
+                        otherItem.classList.remove('active');
+                    }
+                });
+                // Переключаем текущий
+                item.classList.toggle('active');
+            });
+        }
+    });
+}
